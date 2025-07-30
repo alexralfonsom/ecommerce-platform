@@ -1,0 +1,376 @@
+{
+  "general": {
+    "add": "Agregar",
+    "loading": "Cargando...",
+    "designBy": "Diseñado y desarrollado por",
+    "companyName": "StartIA",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "create": "Crear",
+    "update": "Actualizar",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "actions": "Acciones",
+    "status": "Estado",
+    "active": "Activo",
+    "inactive": "Inactivo",
+    "yes": "Sí",
+    "no": "No",
+    "confirm": "Confirmar",
+    "close": "Cerrar",
+    "refresh": "Actualizar",
+    "retry": "Reintentar",
+    "moreActions": "Más acciones",
+    "browsers": {
+      "reload": "Recargar la página"
+    },
+    "warning": "Advertencia",
+    "dialogs": {
+      "individual": {
+        "title": "Confirmar eliminación",
+        "description": "¿Estás seguro de que deseas eliminar el registro <strong>\"{itemName}\"</strong>?<br></br>Esta acción no se puede deshacer."
+      },
+      "batch": {
+        "title": "Confirmar eliminación masiva",
+        "description": "¿Estás seguro de que deseas eliminar <strong>{count, plural, =1 {1 registro seleccionado} other {# registros seleccionados}}</strong>?",
+        "itemsToDelete": "Registros a eliminar",
+        "preview": "Primeros registros",
+        "andMore": "... y {count} registros más",
+        "confirmButtonText": "Eliminar {count, plural, =1 {1 registro} other {# registros}}"
+      },
+      "confirmButtonText": "Eliminar",
+      "cancelButtonText": "Cancelar",
+      "labelDeleting": "Eliminando...",
+      "generalMessageInfo": "Esta acción es permanente y no se puede deshacer."
+    }
+  },
+  "auth": {
+    "login": {
+      "signIn": "Iniciar sesión",
+      "signOut": "Cerrar sesión",
+      "username": "Usuario o dirección de correo:",
+      "usernamePlaceHolder": "usuario@example.com",
+      "password": "Contraseña:",
+      "passwordPlaceHolder": "********",
+      "forgotPassword": "¿Olvidaste tu contraseña?",
+      "dontHaveAccount": "¿No tienes una cuenta?",
+      "signUp": "Regístrate",
+      "signUpButton": "Registrarse",
+      "messagePrincipal": "Sabemos que la gestión eficaz es clave.\nPor ello, hemos creado una plataforma de administración general para simplificar tus procesos.",
+      "orContinueWith": "O continúa con",
+      "loginWirthApple": "Iniciar sesión con Apple",
+      "loginWithGoogle": "Iniciar sesión con Google",
+      "loginWithMicrosoft": "Iniciar sesión con Microsoft",
+      "privacyPolicy": "Política de privacidad",
+      "termsOfService": "Términos de servicio",
+      "footerAgreement": "Al iniciar sesión, aceptas nuestra <privacyPolicy></privacyPolicy> y <termsOfService></termsOfService>.",
+      "createAccount": "Crear una cuenta",
+      "createAccountDescription": "Introduce tu correo electrónico a continuación para crear tu cuenta."
+    },
+    "universalLogin": {
+      "redirectToSecureLogin": "Redirigiendo a la página de inicio de sesión segura...",
+      "automaticRedirectionIn": "Redirección automática en {seconds, plural, =1 {1 segundo} other {# segundos}}",
+      "redirecting": "Redirigiendo...",
+      "continueNow": "Continuar ahora",
+      "secureConnectionTitle": "Conexión segura",
+      "secureConnectionDescription": "Tu información está protegida con cifrado de extremo a extremo."
+    },
+    "logout": {
+      "sessionClosing": "Cerrando sesión...",
+      "sessionClosingMessage": "Limpiando datos locales y finalizando sesión de forma segura...",
+      "sessionClosedOk": "Sesión Cerrada Exitosamente",
+      "sessionClosedMessage": "Tu sesión se ha cerrado de forma segura. Todos los datos locales han sido eliminados.",
+      "sessionListTitle": "Logout Seguro Completado.",
+      "sessionListDetail": "[*]Cookies eliminadas[*]Sesión invalidada[*]Tokens de acceso revocados",
+      "signInAgain": "Iniciar sesión nuevamente",
+      "messageIfNotLogout": "Si no iniciaste este logout,<supportLink>por favor contactanos inmediatamente.</supportLink>",
+      "messagePrivacy": "Tu privacidad y seguridad es importante para nosotros. "
+    },
+    "messages": {
+      "invalidCredentials": "Usuario o contraseña incorrectos",
+      "error": "Ha ocurrido un error durante el inicio de sesión",
+      "loading": "Iniciando sesión...",
+      "loadingSignUp": "Registrando...",
+      "sessionExpired": "Tu sesión ha expirado",
+      "welcome": "Bienvenido al sistema admin! 👋🏻",
+      "welcomeSubtitle": "Inicia sesión y comienza la aventura"
+    }
+  },
+  "navigation": {
+    "home": "Inicio",
+    "catalogs": "Catálogos",
+    "catalog": "Catálogo",
+    "details": "Detalles",
+    "users": "Usuarios",
+    "reports": "Reportes",
+    "settings": "Configuración",
+    "profile": "Perfil"
+  },
+  "breadcrumb": {
+    "dynamicRoute": "{type} #{value}",
+    "ellipsis": "...",
+    "home": "Inicio"
+  },
+  "common": {
+    "welcome": "Bienvenido al Sistema de Catálogos",
+    "select": "Selecciona una opción para comenzar",
+    "noData": "No hay datos disponibles",
+    "error": "Error",
+    "success": "Éxito",
+    "warning": "Advertencia",
+    "info": "Información"
+  },
+  "catalogs": {
+    "title": "Catálogos Maestros",
+    "description": "Gestiona los catálogos maestros del sistema",
+    "new": "Nuevo Catálogo",
+    "edit": "Editar Catálogo",
+    "delete": "Eliminar Catálogo",
+    "selectedCount": "{count} catálogo(s) seleccionado(s)",
+    "searchPlaceholder": "Buscar por nombre...",
+    "showInactive": "Mostrar inactivos",
+    "showAll": "Mostrar todos",
+    "onlyActive": "Solo activos",
+    "viewDetails": "Ver Detalles",
+    "actions": "Acciones",
+    "status": {
+      "active": "Activo",
+      "inactive": "Inactivo"
+    },
+    "statCards": {
+      "totalCatalogs": "Total Catálogos",
+      "activeCatalogs": "Catálogos Activos",
+      "inactiveCatalogs": "Catálogos Inactivos",
+      "recentlyUpdated": "Actualizados Recientemente ({count})",
+      "statCardLabel": "Estadísticas de catálogos maestros"
+    },
+    "fields": {
+      "id": "ID",
+      "name": "Nombre",
+      "status": "Estado",
+      "createdDate": "Fecha Creación",
+      "createdBy": "Creado Por",
+      "modifiedDate": "Fecha Modificación",
+      "modifiedBy": "Modificado Por"
+    },
+    "form": {
+      "nameLabel": "Nombre del Catálogo",
+      "namePlaceholder": "Ingrese el nombre del catálogo",
+      "nameRequired": "El nombre es requerido",
+      "activeLabel": "Catálogo activo",
+      "activeHelp": "Los catálogos inactivos no aparecerán en las listas de selección"
+    },
+    "messages": {
+      "createSuccess": "Catálogo creado exitosamente",
+      "updateSuccess": "Catálogo actualizado exitosamente",
+      "deleteSuccess": "Catálogo eliminado exitosamente",
+      "toggleSuccess": "Estado del catálogo cambiado exitosamente",
+      "createError": "Error al crear el catálogo",
+      "updateError": "Error al actualizar el catálogo",
+      "deleteError": "Error al eliminar el catálogo",
+      "loadError": "Error al cargar los catálogos",
+      "notFound": "Catálogo no encontrado"
+    },
+    "details": {
+      "title": "Detalles de Catálogos",
+      "description": "Gestiona los detalles de los catálogos maestros",
+      "new": "Nuevo Detalle",
+      "edit": "Editar Detalle",
+      "delete": "Eliminar Detalle",
+      "confirmDelete": "¿Estás seguro de que deseas eliminar este detalle?",
+      "confirmDeleteMessage": "Esta acción no se puede deshacer.",
+      "deleteSelected": "Eliminar Seleccionados",
+      "selectedCount": "{count} detalle(s) seleccionado(s)",
+      "searchPlaceholder": "Buscar por nombre, código o evento...",
+      "backToCatalogs": "Volver a Catálogos",
+      "actions": "Acciones",
+      "statCardLabel": "Estadísticas de detalle de catálogos maestros",
+      "fields": {
+        "id": "ID",
+        "masterCatalogId": "ID Catálogo Maestro",
+        "name": "Nombre",
+        "code": "Código",
+        "event": "Evento",
+        "status": "Estado",
+        "createdDate": "Fecha Creación",
+        "createdBy": "Creado Por",
+        "modifiedDate": "Fecha Modificación",
+        "modifiedBy": "Modificado Por"
+      },
+      "form": {
+        "nameLabel": "Nombre del Detalle",
+        "namePlaceholder": "Ingrese el nombre del detalle",
+        "nameRequired": "El nombre es requerido",
+        "codeLabel": "Código",
+        "codePlaceholder": "Código opcional",
+        "eventLabel": "Evento",
+        "eventPlaceholder": "Evento opcional",
+        "activeLabel": "Detalle activo",
+        "masterCatalogLabel": "Catálogo Maestro",
+        "selectMasterCatalog": "Seleccione un catálogo maestro"
+      },
+      "messages": {
+        "createSuccess": "Detalle creado exitosamente",
+        "updateSuccess": "Detalle actualizado exitosamente",
+        "deleteSuccess": "Detalle eliminado exitosamente",
+        "toggleSuccess": "Estado del detalle cambiado exitosamente",
+        "createError": "Error al crear el detalle",
+        "updateError": "Error al actualizar el detalle",
+        "deleteError": "Error al eliminar el detalle",
+        "loadError": "Error al cargar los detalles",
+        "notFound": "Detalle no encontrado"
+      }
+    },
+    "dialogs": {
+      "master": {
+        "individual": {
+          "title": "Confirmar eliminación",
+          "description": "¿Estás seguro de que deseas eliminar el catálogo <strong>\"{itemName}\"</strong>?<br></br>Esta acción eliminará también todos los detalles asociados y no se puede deshacer."
+        },
+        "batch": {
+          "title": "Confirmar eliminación masiva",
+          "description": "¿Estás seguro de que deseas eliminar <strong>{count, plural, =1 {1 catálogo seleccionado} other {# catálogos seleccionados}}</strong> ?",
+          "itemsToDelete": "Catálogos a eliminar",
+          "preview": "Primeros catálogos",
+          "andMore": "... y {count} catálogos más",
+          "confirmButtonText": "Eliminar {count, plural, =1 {1 catálogo} other {# catálogos}}"
+        }
+      },
+      "detail": {
+        "individual": {
+          "title": "Confirmar eliminación de detalle",
+          "description": "¿Estás seguro de que deseas eliminar el detalle <strong>\"{itemName}\"</strong>?<br></br>Esta acción no se puede deshacer."
+        },
+        "batch": {
+          "title": "Confirmar eliminación masiva de detalles",
+          "description": "¿Estás seguro de que deseas eliminar <strong>{count, plural, =1 {1 detalle} other {# detalles}}</strong> seleccionados?",
+          "itemsToDelete": "Registros detalle a eliminar",
+          "preview": "Primeros Registros detalle",
+          "andMore": "... y {count} registros detalle más",
+          "confirmButtonText": "Eliminar {count, plural, =1 {1 detalle} other {# detalles}}"
+        }
+      },
+      "confirmButtonText": "Eliminar",
+      "cancelButtonText": "Cancelar",
+      "labelDeleting": "Eliminando...",
+      "generalMessageInfo": "Esta acción es permanente y no se puede deshacer."
+    }
+  },
+  "error": {
+    "404": {
+      "title": "Página no encontrada",
+      "description": "Lo sentimos, la página que buscas no existe o ha sido movida.",
+      "goHome": "Volver al inicio",
+      "goBack": "Página anterior",
+      "needHelp": "¿Necesitas ayuda?"
+    }
+  },
+  "components": {
+    "table": {
+      "noData": "No hay datos disponibles",
+      "loading": "Cargando datos...",
+      "error": "Oops! Algo salió mal al cargar los datos",
+      "errorDetails": "No pudimos cargar los datos. Por favor, inténtalo de nuevo más tarde o recarga la página.",
+      "searchPlaceholder": "Buscar...",
+      "actions": "Acciones",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "viewDetails": "Ver Detalles",
+      "sortAsc": "Asc",
+      "sortDesc": "Desc",
+      "sortHide": "Ocultar"
+    },
+    "pagination": {
+      "showing": "Mostrando",
+      "to": "a",
+      "of": "de",
+      "results": "resultados",
+      "page": "Página",
+      "goToFirst": "Ir a la primera página",
+      "goToPrevious": "Ir a la página anterior",
+      "goToNext": "Ir a la siguiente página",
+      "goToLast": "Ir a la última página",
+      "previous": "Anterior",
+      "next": "Siguiente",
+      "itemsPerPage": "Filas por página",
+      "rowsSelected": "fila(s) seleccionada(s)"
+    },
+    "dataTableViewOptions": {
+      "view": "Ver",
+      "toggleColumns": "Alternar columnas"
+    },
+    "dataTableHeaderToolbar": {
+      "exportSelectedButton": "Exportar ",
+      "deletedSelectedButton": "Eliminar ",
+      "placeHolderSearch": "Buscar por {searchColumn} ...",
+      "errorTableStatus": "Error al cargar los datos de la tabla",
+      "reset": "Reiniciar"
+    },
+    "DataTableFacetedFilter": {
+      "selected": "Seleccionado",
+      "noResults": "No se encontraron resultados para los filtros seleccionados",
+      "clearFilters": "Limpiar filtros"
+    },
+    "dataTableRowActions": {
+      "openMenu": "Abrir menú de acciones",
+      "view": "Ver",
+      "edit": "Editar",
+      "makeCopy": "Hacer una copia",
+      "delete": "Eliminar",
+      "viewDetails": "Ver Detalles",
+      "activate": "Activar",
+      "deactivate": "Desactivar"
+    },
+    "modal": {
+      "confirmTitle": "Confirmación",
+      "confirmMessage": "¿Estás seguro de que deseas realizar esta acción?",
+      "cancelButton": "Cancelar",
+      "confirmButton": "Confirmar"
+    },
+    "toast": {
+      "success": "{message} exitosamente",
+      "error": "{message} fallido",
+      "info": "{message} información",
+      "warning": "{message} advertencia"
+    },
+    "statCard": {
+      "loading": "Cargando tarjetas...",
+      "error": "Error al cargar datos",
+      "noData": "No hay datos disponibles",
+      "refresh": "Actualizar datos",
+      "trend": {
+        "up": "Aumentó",
+        "down": "Disminuyó",
+        "neutral": "Sin cambios",
+        "vs": "vs",
+        "period": {
+          "day": "día anterior",
+          "week": "semana anterior",
+          "month": "mes anterior",
+          "year": "año anterior"
+        }
+      },
+      "formatters": {
+        "number": "número",
+        "currency": "moneda",
+        "percentage": "porcentaje"
+      }
+    },
+    "export": {
+      "noData": "No hay datos para exportar",
+      "noRecords": "No hay registros seleccionados para exportar",
+      "formatNotSupported": "Formato de exportación no soportado",
+      "exportSuccess": "Datos exportados exitosamente",
+      "exportSuccessMessage": "{count} han sido exportados exitosamente en el formato {format}.",
+      "exportError": "Error al exportar los datos",
+      "exportErrorMessage": "No se pudo exportar: {error}",
+      "format": {
+        "csv": "Exportar como CSV",
+        "xlsx": "Export como Excel (XLSX)",
+        "pdf": "Export como PDF"
+      }
+    }
+  }
+}

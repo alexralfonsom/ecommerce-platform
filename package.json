@@ -1,0 +1,37 @@
+{
+  "name": "ecommerce-platform",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "lint": "turbo lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "type-check": "turbo type-check",
+    "clean": "turbo clean && rm -rf node_modules",
+    "dev:admin": "turbo dev --filter=tenant-admin",
+    "dev:store": "turbo dev --filter=tenant-store",
+    "dev:super": "turbo dev --filter=super-admin",
+    "build:admin": "turbo build --filter=tenant-admin",
+    "build:store": "turbo build --filter=tenant-store",
+    "build:super": "turbo build --filter=super-admin",
+    "lint:admin": "turbo lint --filter=tenant-admin"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "prettier": "^3.6.2",
+    "prettier-plugin-tailwindcss": "^0.6.14",
+    "turbo": "^2.5.5",
+    "typescript": "^5.8.3"
+  },
+  "keywords": [],
+  "author": "Alex R Alfonso M",
+  "license": "ISC",
+  "packageManager": "pnpm@10.13.1"
+}

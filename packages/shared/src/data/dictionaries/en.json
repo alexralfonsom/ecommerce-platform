@@ -1,0 +1,376 @@
+{
+  "general": {
+    "add": "Add",
+    "loading": "Loading...",
+    "designBy": "Designed and developed by",
+    "companyName": "StartIA",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "create": "Create",
+    "update": "Update",
+    "search": "Search",
+    "filter": "Filter",
+    "actions": "Actions",
+    "status": "Status",
+    "active": "Active",
+    "inactive": "Inactive",
+    "yes": "Yes",
+    "no": "No",
+    "confirm": "Confirm",
+    "close": "Close",
+    "refresh": "Refresh",
+    "retry": "Retry",
+    "moreActions": "More Actions",
+    "browsers": {
+      "reload": "Reload the page"
+    },
+    "warning": "Warning",
+    "dialogs": {
+      "individual": {
+        "title": "Confirm deletion",
+        "description": "Are you sure you want to delete the record <strong>\"{itemName}\"</strong>?<br></br>This action cannot be undone."
+      },
+      "batch": {
+        "title": "Confirm batch deletion",
+        "description": "Are you sure you want to delete <strong>{count, plural, =1 {1 record} other {# records}}</strong>?",
+        "itemsToDelete": "Records to delete",
+        "preview": "First records",
+        "andMore": "... and {count} more records",
+        "confirmButtonText": "Delete {count, plural, =1 {1 record} other {# records}}"
+      },
+      "confirmButtonText": "Delete",
+      "cancelButtonText": "Cancel",
+      "labelDeleting": "Deleting...",
+      "generalMessageInfo": "This action is permanent and cannot be undone."
+    }
+  },
+  "auth": {
+    "login": {
+      "signIn": "Sign In",
+      "signOut": "Sign Out",
+      "username": "User or email address:",
+      "usernamePlaceHolder": "user@example.com",
+      "password": "Password:",
+      "passwordPlaceHolder": "********",
+      "forgotPassword": "Forgot your password?",
+      "dontHaveAccount": "Don't have an account?",
+      "signUp": "Sign Up",
+      "signUpButton": "Create an account",
+      "messagePrincipal": "We know that effective management is key. That's why we've created a general administration platform to simplify your processes.",
+      "orContinueWith": "Or continue with",
+      "loginWirthApple": "Sign in with Apple",
+      "loginWithGoogle": "Sign in with Google",
+      "loginWithMicrosoft": "Sign in with Microsoft",
+      "privacyPolicy": "Privacy Policy",
+      "termsOfService": "Terms of Service",
+      "footerAgreement": "By signing in, you agree to our <privacyPolicy></privacyPolicy> and <termsOfService></termsOfService>.",
+      "createAccount": "Create Account",
+      "createAccountDescription": "Enter your email below to create your account."
+    },
+    "universalLogin": {
+      "redirectToSecureLogin": "You are being redirected to a secure login page",
+      "automaticRedirectionIn": "Automatic redirection in {seconds, plural, =1 {1 second} other {# seconds}}",
+      "redirecting": "Redirecting ...",
+      "continueNow": "Continue now",
+      "secureConnectionTitle": "Secure Connection",
+      "secureConnectionDescription": "Your information is protected with end-to-end encryption"
+    },
+    "logout": {
+      "sessionClosing": "Signing out...",
+      "sessionClosingMessage": "Wiping local data and securely ending your session...",
+      "sessionClosedOk": "Session Successfully Closed",
+      "sessionClosedMessage": "Your session has been securely closed. All local data has been deleted.",
+      "sessionListTitle": "Secure Logout Completed.",
+      "sessionListDetail": "[*]Cookies Deleted[*]Session Invalidated[*]Access Tokens Revoked",
+      "signInAgain": "Please sign in again",
+      "messageIfNotLogout": "If you did not initiate this logout,<supportLink>please contact us immediately.</supportLink>",
+      "messagePrivacy": "Your privacy and security are important to us. "
+    },
+    "messages": {
+      "invalidCredentials": "Invalid username or password",
+      "error": "An error occurred during sign in",
+      "loading": "Signing in...",
+      "loadingSignUp": "Creating account...",
+      "sessionExpired": "Your session has expired",
+      "welcome": "Welcome to the admin system! 👋🏻",
+      "welcomeSubtitle": "Log in and start the adventure"
+    }
+  },
+  "navigation": {
+    "home": "Home",
+    "catalogs": "Catalogs",
+    "catalog": "Catalog",
+    "details": "Details",
+    "users": "Users",
+    "reports": "Reports",
+    "settings": "Settings",
+    "profile": "Profile"
+  },
+  "breadcrumb": {
+    "dynamicRoute": "{type} #{value}",
+    "ellipsis": "...",
+    "home": "Home"
+  },
+  "common": {
+    "welcome": "Welcome to the Catalog System",
+    "select": "Select an option to get started",
+    "noData": "No data available",
+    "error": "Error",
+    "success": "Success",
+    "warning": "Warning",
+    "info": "Information"
+  },
+  "catalogs": {
+    "title": "Master Catalogs",
+    "description": "Manage the system's master catalogs",
+    "new": "New Catalog",
+    "edit": "Edit Catalog",
+    "delete": "Delete Catalog",
+    "selectedCount": "{count} catalog(s) selected",
+    "searchPlaceholder": "Search by name...",
+    "showInactive": "Show inactive",
+    "showAll": "Show all",
+    "onlyActive": "Only active",
+    "viewDetails": "View Details",
+    "actions": "Actions",
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "statCards": {
+      "totalCatalogs": "Total Catalogs",
+      "activeCatalogs": "Active Catalogs",
+      "inactiveCatalogs": "Inactive Catalogs",
+      "recentlyUpdated": "Recently Updated ({count})",
+      "statCardLabel": "Master catalogs statistics"
+    },
+    "fields": {
+      "id": "ID",
+      "name": "Name",
+      "status": "Status",
+      "createdDate": "Creation Date",
+      "createdBy": "Created By",
+      "modifiedDate": "Modification Date",
+      "modifiedBy": "Modified By"
+    },
+    "form": {
+      "nameLabel": "Catalog Name",
+      "namePlaceholder": "Enter the catalog name",
+      "nameRequired": "Name is required",
+      "activeLabel": "Active catalog",
+      "activeHelp": "Inactive catalogs will not appear in selection lists"
+    },
+    "messages": {
+      "createSuccess": "Catalog created successfully",
+      "updateSuccess": "Catalog updated successfully",
+      "deleteSuccess": "Catalog deleted successfully",
+      "toggleSuccess": "Catalog status changed successfully",
+      "createError": "Error creating catalog",
+      "updateError": "Error updating catalog",
+      "deleteError": "Error deleting catalog",
+      "loadError": "Error loading catalogs",
+      "notFound": "Catalog not found"
+    },
+    "details": {
+      "title": "Catalog Details",
+      "description": "Manage master catalog details",
+      "new": "New Detail",
+      "edit": "Edit Detail",
+      "delete": "Delete Detail",
+      "confirmDelete": "Are you sure you want to delete this detail?",
+      "confirmDeleteMessage": "This action cannot be undone.",
+      "deleteSelected": "Delete Selected",
+      "selectedCount": "{count} detail(s) selected",
+      "searchPlaceholder": "Search by name, code or event...",
+      "backToCatalogs": "Back to Catalogs",
+      "actions": "Actions",
+      "statCardLabel": "Master catalog details statistics",
+      "fields": {
+        "id": "ID",
+        "masterCatalogId": "Master Catalog ID",
+        "name": "Name",
+        "code": "Code",
+        "event": "Event",
+        "status": "Status",
+        "createdDate": "Creation Date",
+        "createdBy": "Created By",
+        "modifiedDate": "Modification Date",
+        "modifiedBy": "Modified By"
+      },
+      "form": {
+        "nameLabel": "Detail Name",
+        "namePlaceholder": "Enter the detail name",
+        "nameRequired": "Name is required",
+        "codeLabel": "Code",
+        "codePlaceholder": "Optional code",
+        "eventLabel": "Event",
+        "eventPlaceholder": "Optional event",
+        "activeLabel": "Active detail",
+        "masterCatalogLabel": "Master Catalog",
+        "selectMasterCatalog": "Select a master catalog"
+      },
+      "messages": {
+        "createSuccess": "Detail created successfully",
+        "updateSuccess": "Detail updated successfully",
+        "deleteSuccess": "Detail deleted successfully",
+        "toggleSuccess": "Detail status changed successfully",
+        "createError": "Error creating detail",
+        "updateError": "Error updating detail",
+        "deleteError": "Error deleting detail",
+        "loadError": "Error loading details",
+        "notFound": "Detail not found"
+      }
+    },
+    "dialogs": {
+      "master": {
+        "individual": {
+          "title": "Confirm deletion",
+          "description": "Are you sure you want to delete the catalog <strong>\"{itemName}\"</strong>?<br></br>This action will also delete all associated details and cannot be undone."
+        },
+        "batch": {
+          "title": "Confirm batch deletion",
+          "description": "Are you sure you want to delete <strong>{count, plural, =1 {1 catalog} other {# catalogs}}</strong>?",
+          "itemsToDelete": "Catalogs to delete",
+          "preview": "First catalogs",
+          "andMore": "... and {count} more catalogs",
+          "confirmButtonText": "Delete {count, plural, =1 {1 catalog} other {# catalogs}}"
+        }
+      },
+      "detail": {
+        "individual": {
+          "title": "Confirm detail deletion",
+          "description": "Are you sure you want to delete the detail <strong>\"{itemName}\"</strong>?<br></br>This action cannot be undone."
+        },
+        "batch": {
+          "title": "Confirm batch detail deletion",
+          "description": "Are you sure you want to delete <strong>{count, plural, =1 {1 detail} other {# details}}</strong>?",
+          "itemsToDelete": "Detail records to delete",
+          "preview": "First detail records",
+          "andMore": "... and {count} more detail records",
+          "confirmButtonText": "Delete {count, plural, =1 {1 detail} other {# details}}"
+        }
+      },
+      "confirmButtonText": "Delete",
+      "cancelButtonText": "Cancel",
+      "labelDeleting": "Deleting...",
+      "generalMessageInfo": "This action is permanent and cannot be undone."
+    }
+  },
+  "error": {
+    "404": {
+      "title": "Page not found",
+      "description": "Sorry, the page you are looking for does not exist or has been moved.",
+      "goHome": "Go to home",
+      "goBack": "Previous page",
+      "needHelp": "Need help?"
+    }
+  },
+  "components": {
+    "table": {
+      "noData": "No data available",
+      "loading": "Loading data...",
+      "error": "Oops! Something went wrong while loading data",
+      "errorDetails": "We couldn't load the data. Please try again later or reload the page.",
+      "searchPlaceholder": "Search...",
+      "actions": "Actions",
+      "edit": "Edit",
+      "delete": "Delete",
+      "viewDetails": "View Details",
+      "sortAsc": "Asc",
+      "sortDesc": "Desc",
+      "sortHide": "Hide"
+    },
+    "pagination": {
+      "showing": "Showing",
+      "to": "to",
+      "of": "of",
+      "results": "results",
+      "page": "Page",
+      "goToFirst": "Go to first page",
+      "goToPrevious": "Go to previous page",
+      "goToNext": "Go to next page",
+      "goToLast": "Go to last page",
+      "previous": "Previous",
+      "next": "Next",
+      "itemsPerPage": "Rows per page",
+      "rowsSelected": "row(s) selected"
+    },
+    "dataTableViewOptions": {
+      "view": "View",
+      "toggleColumns": "Toggle columns"
+    },
+    "dataTableHeaderToolbar": {
+      "exportSelectedButton": "Export ",
+      "deletedSelectedButton": "Delete ",
+      "placeHolderSearch": "Search by {searchColumn} ...",
+      "errorTableStatus": "Error loading table data",
+      "reset": "Reset"
+    },
+    "DataTableFacetedFilter": {
+      "selected": "Selected",
+      "noResults": "No results found for the selected filters",
+      "clearFilters": "Clear filters"
+    },
+    "dataTableRowActions": {
+      "openMenu": "Open actions menu",
+      "view": "View",
+      "edit": "Edit",
+      "makeCopy": "Make a copy",
+      "delete": "Delete",
+      "viewDetails": "View Details",
+      "activate": "Activate",
+      "deactivate": "Deactivate"
+    },
+    "modal": {
+      "confirmTitle": "Confirmation",
+      "confirmMessage": "Are you sure you want to perform this action?",
+      "cancelButton": "Cancel",
+      "confirmButton": "Confirm"
+    },
+    "toast": {
+      "success": "{message} successfully",
+      "error": "{message} failed",
+      "info": "{message} information",
+      "warning": "{message} warning"
+    },
+    "statCard": {
+      "loading": "Loading cards...",
+      "error": "Error loading data",
+      "noData": "No data available",
+      "refresh": "Refresh data",
+      "trend": {
+        "up": "Increased",
+        "down": "Decreased",
+        "neutral": "No changes",
+        "vs": "vs",
+        "period": {
+          "day": "previous day",
+          "week": "previous week",
+          "month": "previous month",
+          "year": "previous year"
+        }
+      },
+      "formatters": {
+        "number": "number",
+        "currency": "currency",
+        "percentage": "percentage"
+      }
+    },
+    "export": {
+      "noData": "No data available for export",
+      "noRecords": "No records selected for export",
+      "formatNotSupported": "Export format not supported",
+      "exportSuccess": "Export successful",
+      "exportSuccessMessage": "{count} record(s) exported successfully in {format} format.",
+      "exportError": "Export failed",
+      "exportErrorMessage": "Can't export data: {error}",
+      "format": {
+        "csv": "Export to CSV",
+        "xlsx": "Export to Excel (XLSX)",
+        "pdf": "Export to PDF"
+      }
+    }
+  }
+}

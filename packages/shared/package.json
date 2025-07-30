@@ -1,0 +1,83 @@
+{
+  "name": "@repo/shared",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./configs/*": {
+      "types": "./dist/configs/*.d.ts",
+      "import": "./dist/configs/*.js"
+    },
+    "./data": {
+      "types": "./dist/data/index.d.ts",
+      "import": "./dist/data/index.js"
+    },
+    "./data/mocks": {
+      "types": "./dist/data/mocks/index.d.ts",
+      "import": "./dist/data/mocks/index.js"
+    },
+    "./data/mocks/*": {
+      "types": "./dist/data/mocks/*.d.ts",
+      "import": "./dist/data/mocks/*.js"
+    },
+    "./lib/*": {
+      "types": "./dist/lib/*.d.ts",
+      "import": "./dist/lib/*.js"
+    },
+    "./lib/utils/*": {
+      "types": "./dist/lib/utils/*.d.ts",
+      "import": "./dist/lib/utils/*.js"
+    },
+    "./lib/hooks": {
+      "types": "./dist/lib/hooks/index.d.ts",
+      "import": "./dist/lib/hooks/index.js"
+    },
+    "./types/*": {
+      "types": "./dist/types/*.d.ts",
+      "import": "./dist/types/*.js"
+    }
+  },
+  "dependencies": {
+    "@formatjs/intl-localematcher": "^0.6.1",
+    "@tanstack/react-query": "^5.83.0",
+    "@types/negotiator": "^0.6.4",
+    "@types/node": "^24.1.0",
+    "axios": "^1.11.0",
+    "clsx": "^2.1.1",
+    "eslint-config-next": "^15.4.5",
+    "jspdf": "^3.0.1",
+    "jspdf-autotable": "^5.0.2",
+    "lucide-react": "^0.534.0",
+    "negotiator": "^1.0.0",
+    "next": "^15.4.5",
+    "next-auth": "^4.24.11",
+    "next-intl": "^4.3.4",
+    "tailwind-merge": "^3.3.1",
+    "xlsx": "^0.18.5",
+    "zod": "^4.0.13"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "^24.1.0",
+    "@types/react": "^19.1.9",
+    "@types/react-dom": "^19.1.7",
+    "tsc-alias": "^1.8.16",
+    "typescript": "^5.8.3"
+  },
+  "peerDependencies": {
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  },
+  "scripts": {
+    "build": "tsc && tsc-alias",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist tsconfig.tsbuildinfo",
+    "type-check": "tsc --noEmit"
+  }
+}
