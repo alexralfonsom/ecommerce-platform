@@ -1,7 +1,6 @@
 import type { Preview } from '@storybook/nextjs-vite';
 // Import Tailwind configs and UI styles directly
-import '@repo/tailwind-configs/dist';
-import '../../packages/ui/dist/index.css';
+import '@repo/ui/styles.css';
 
 const preview: Preview = {
   parameters: {

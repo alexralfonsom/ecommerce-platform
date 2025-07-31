@@ -45,6 +45,8 @@ const config: StorybookConfig = {
         '@components/layout': path.resolve(__dirname, '../../../packages/ui/src/components/layout'),
         '@components/auth': path.resolve(__dirname, '../../../packages/ui/src/components/auth'),
         '@components/not-found': path.resolve(__dirname, '../../../packages/ui/src/components/not-found'),
+        '@/configs/DesignSystem': path.resolve(__dirname, '../../../packages/ui/src/configs/DesignSystem'),
+        '@configs/i18n': path.resolve(__dirname, '../../../packages/shared/src/configs/i18n')
       };
     }
 
