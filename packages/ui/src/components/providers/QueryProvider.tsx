@@ -20,19 +20,11 @@ const createQueryClient = () =>
         gcTime: 10 * 60 * 1000, // 10 minutos (antes era cacheTime)
 
         // Reintentos automáticos en caso de error
-        retry: (failureCount, error: any) => {
-          // No reintentar para errores 4xx (cliente)
-          if (error?.response?.status >= 400 && error?.response?.status < 500) {
-            return false;
-          }
-          // Máximo 2 reintentos para errores de red/servidor
-          return failureCount < 2;
-        },
-
+        retry:false,
         // Configuración de refetch
-        refetchOnWindowFocus: process.env.NODE_ENV === 'production',
-        refetchOnReconnect: true,
-        refetchOnMount: true,
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: false,
+        refetchOnMount: false,
 
         // Configuración de network
         networkMode: 'always', // Permite queries offline con caché

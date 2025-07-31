@@ -3,6 +3,7 @@
 
 import { AuthGuard } from '@repo/ui';
 import { useSession } from 'next-auth/react';
+import { useAuthToken } from '@repo/ui';
 import { DashboardLayout } from '@repo/ui';
 import type { ExtendedSession } from '@repo/shared/types/auth';
 import { NavigationItem } from '@repo/shared/types/navigation';
@@ -28,7 +29,7 @@ const mckNavSecondary = MockNavSecondary;
 
 export default function ProtectedLayout({ children }: { children: React.ReactNode }) {
   const { data: session } = useSession() as { data: ExtendedSession | null };
-
+  useAuthToken();
   // Mapear datos de Auth0 a tipos NextAuth
   const user = session?.user
     ? {

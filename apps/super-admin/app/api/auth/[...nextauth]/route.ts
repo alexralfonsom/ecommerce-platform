@@ -109,9 +109,16 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user, account }) {
       if (account && user) {
-        token.accessToken = account.access_token;
-        token.expiresAt = (account.expires_at as number) * 1000; // Convertir a milisegundos
-        token.refreshToken = account.refresh_token;
+        if (account.access_token) {
+          token.accessToken = account.access_token;
+          token.expiresAt = (account.expires_at as number) * 1000; // Convertir a milisegundos
+          token.refreshToken = account.refresh_token;
+        } else {
+          // Para credentials provider, generar token temporal
+          token.accessToken = `temp_token_${user.id}_${Date.now()}`;
+          token.expiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000; // 7 días
+        }
+
         token.nickname = account.nickname || user.name || user.email;
         token.id = user.id || user.sub || 'unknown';
         token.provider = account.provider;
@@ -122,6 +129,7 @@ export const authOptions: NextAuthOptions = {
           token.client_id = process.env.AUTH0_CLIENT_ID;
         }
 
+        console.log(token.accessToken);
         console.log(
           `Token created - Expires at: ${new Date(token.expiresAt as number).toISOString()}`,
         );
@@ -180,6 +188,7 @@ export const authOptions: NextAuthOptions = {
         user.id = token.id || user.id || '';
         user.role = token.role;
         user.provider = token.provider;
+        session.accessToken = typeof token.accessToken === 'string' ? token.accessToken : undefined;
         session.id_token = typeof token.id_token === 'string' ? token.id_token : undefined;
         session.client_id = typeof token.client_id === 'string' ? token.client_id : undefined;
       }

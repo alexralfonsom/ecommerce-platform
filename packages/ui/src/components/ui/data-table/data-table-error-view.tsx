@@ -198,10 +198,12 @@ export function DataTableErrorView({
   }, [error, errorType]);
 
   // 🔄 Manejador de recarga de página
-  const handleReload = () => {
+  const handleReload = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     setTimeout(() => {
       window.location.reload();
-    }, 1000);
+    }, 500);
   };
 
   return (

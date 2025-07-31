@@ -61,8 +61,7 @@ const LanguageSwitcher = memo<LanguageSwitcherProps>(function LanguageSwitcher({
           saveLocalePreference(newLocale);
 
           // Navegar a la nueva ruta
-          router.push(finalUrl);
-          router.refresh();
+          router.replace(finalUrl);
         } catch (error) {
           console.error('Error switching language:', error);
           // En caso de error, intentar navegación simple

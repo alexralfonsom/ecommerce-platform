@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@repo/ui';
 import {
@@ -127,6 +127,14 @@ export function useCatalogos({
   const router = useRouter();
   const toast = useToast();
   const { exportSelected: performExport, isExporting } = useExport();
+  // Control de montaje para evitar state updates en componentes desmontados
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
   // ===============================
   // ESTADOS DE TABLA
   // ===============================
@@ -428,12 +436,32 @@ export function useCatalogos({
       columnVisibility,
       pagination,
     },
-    // 🔧 HANDLERS OBLIGATORIOS
-    onPaginationChange: setPagination,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    onRowSelectionChange: setRowSelection,
-    onColumnVisibilityChange: setColumnVisibility,
+    // 🔧 HANDLERS OBLIGATORIOS - Protegidos contra state updates en componentes desmontados
+    onPaginationChange: useCallback((updaterOrValue: PaginationState | ((old: PaginationState) => PaginationState)) => {
+      if (isMountedRef.current) {
+        setPagination(updaterOrValue);
+      }
+    }, []),
+    onSortingChange: useCallback((updaterOrValue: SortingState | ((old: SortingState) => SortingState)) => {
+      if (isMountedRef.current) {
+        setSorting(updaterOrValue);
+      }
+    }, []),
+    onColumnFiltersChange: useCallback((updaterOrValue: ColumnFiltersState | ((old: ColumnFiltersState) => ColumnFiltersState)) => {
+      if (isMountedRef.current) {
+        setColumnFilters(updaterOrValue);
+      }
+    }, []),
+    onRowSelectionChange: useCallback((updaterOrValue: Record<string, boolean> | ((old: Record<string, boolean>) => Record<string, boolean>)) => {
+      if (isMountedRef.current) {
+        setRowSelection(updaterOrValue);
+      }
+    }, []),
+    onColumnVisibilityChange: useCallback((updaterOrValue: VisibilityState | ((old: VisibilityState) => VisibilityState)) => {
+      if (isMountedRef.current) {
+        setColumnVisibility(updaterOrValue);
+      }
+    }, []),
 
     // 🔧 CONFIGURACIÓN DE FUNCIONALIDADES
     enableRowSelection: true,

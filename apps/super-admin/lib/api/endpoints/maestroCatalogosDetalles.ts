@@ -1,5 +1,5 @@
 // src/lib/api/endpoints/maestroCatalogosDetalles.ts
-import { apiClient } from '@lib/api/client';
+import { apiClient } from '@repo/shared/lib/api/client';
 
 import {
   ICreateMaestroCatalogoDetalleRequest,

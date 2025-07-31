@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import * as z from "zod";
 import { Form } from '@repo/ui';
 import { FormField } from '@repo/ui';
 import { FormFieldWrapper } from '@repo/ui';
