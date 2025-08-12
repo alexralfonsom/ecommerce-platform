@@ -1,9 +1,32 @@
+/**
+ * API Client utilities for communicating with Admin and Business APIs through APIM.
+ *
+ * Features:
+ * - Automatic AuthN/AuthZ using next-auth session (Bearer token + user context headers)
+ * - Request validation and required auth gating
+ * - Consistent security and telemetry headers (request ID, timestamps, contexts)
+ * - Centralized error handling with rich ApiError metadata and UX-friendly messages
+ * - Helpers for server-side and client-side API clients with environment validation
+ * - Scope and permission helpers for domain-based authorization checks
+ *
+ * Nota: Este archivo está documentado con JSDoc para facilitar su comprensión y uso.
+ */
 // src/lib/api/client.ts
 
 import { getSession } from 'next-auth/react';
 import { ApiResponse, ApiError, UserContext } from '@/types/api';
 import { ExtendedUser, ExtendedSession } from '@/types/auth';
 
+/**
+ * Configuración para instanciar un ApiClient.
+ * @typedef ApiClientConfig
+ * @property {string} name Nombre descriptivo del cliente (p. ej., "Admin API").
+ * @property {string} baseURL URL base del endpoint publicado en APIM (sin slash final).
+ * @property {string} subscriptionKey Clave de suscripción de APIM (server-side) o pública (client-side).
+ * @property {('admin'|'business')} apiType Tipo de API objetivo para ajustar headers/contexto.
+ * @property {string} [version] Versión de la API a reportar en headers (por defecto process.env.NEXT_PUBLIC_API_VERSION o '1.0').
+ * @property {boolean} [requireAuth=true] Si se debe exigir sesión/token para realizar requests.
+ */
 interface ApiClientConfig {
   name: string;
   baseURL: string;
@@ -13,24 +36,45 @@ interface ApiClientConfig {
   requireAuth?: boolean; // Nuevo: forzar autenticación
 }
 
+/**
+ * Opciones de request extendidas basadas en RequestInit de Fetch API.
+ * @typedef RequestOptions
+ * @property {boolean} [skipAuth] Si se debe omitir la verificación y anexado de autenticación.
+ * @property {number} [timeout] Tiempo máximo en ms antes de abortar la solicitud.
+ * @property {boolean} [requireValidSession] Forzar validación de sesión antes del request incluso si skipAuth es true.
+ */
 interface RequestOptions extends RequestInit {
   skipAuth?: boolean;
   timeout?: number;
   requireValidSession?: boolean; // Nuevo: validar session antes de request
 }
 
-// Error personalizado para autenticación
+/**
+ * Error lanzado cuando la autenticación es requerida o inválida.
+ * Útil para distinguir fallos de auth de otros errores de red o negocio.
+ * @extends Error
+ */
 class AuthenticationError extends Error {
+  /**
+   * @param {string} [message="Authentication required"] Mensaje descriptivo del error.
+   */
   constructor(message: string = 'Authentication required') {
     super(message);
     this.name = 'AuthenticationError';
   }
 }
 
+/**
+ * Cliente HTTP para interactuar con APIs administradas por APIM con autenticación y trazabilidad.
+ */
 class ApiClient {
   private config: ApiClientConfig;
   private abortControllers = new Map<string, AbortController>();
 
+  /**
+   * Crea una instancia de ApiClient.
+   * @param {ApiClientConfig} config Configuración del cliente.
+   */
   constructor(config: ApiClientConfig) {
     this.config = {
       ...config,
@@ -39,6 +83,10 @@ class ApiClient {
     };
   }
 
+  /**
+   * Valida que exista una sesión activa con token y usuario válido.
+   * @returns {Promise<boolean>} true si la sesión es válida.
+   */
   private async validateSession(): Promise<boolean> {
     try {
       const session = (await getSession()) as ExtendedSession | null;
@@ -48,6 +96,10 @@ class ApiClient {
     }
   }
 
+  /**
+   * Obtiene el contexto de usuario desde la sesión para auditoría (IDs, email, tenant, permisos).
+   * @returns {Promise<UserContext|null>} Contexto de usuario o null si no está disponible.
+   */
   private async getUserContext(): Promise<UserContext | null> {
     try {
       const session = await getSession();
@@ -67,6 +119,10 @@ class ApiClient {
     }
   }
 
+  /**
+   * Determina el valor del header X-Client-Type según el tipo de API.
+   * @returns {string} Identificador del tipo de cliente.
+   */
   private getClientTypeHeader(): string {
     // Headers específicos por tipo de API para mejor auditoría y control
     const clientTypes = {
@@ -77,6 +133,10 @@ class ApiClient {
     return clientTypes[this.config.apiType] || `NextJS-${this.config.apiType}`;
   }
 
+  /**
+   * Construye headers de seguridad generales y específicos por contexto (admin/business).
+   * @returns {Record<string,string>} Headers de seguridad a incluir en cada request.
+   */
   private getSecurityHeaders(): Record<string, string> {
     // Headers de seguridad específicos por tipo de API
     const baseSecurityHeaders = {
@@ -102,6 +162,13 @@ class ApiClient {
     };
   }
 
+  /**
+   * Genera headers comunes y de autenticación/contexto de usuario cuando corresponde.
+   * Lanza AuthenticationError si requireAuth y no existe sesión/token o contexto de usuario.
+   * @param {RequestOptions} [options]
+   * @returns {Promise<Record<string,string>>}
+   * @throws {AuthenticationError}
+   */
   private async getHeaders(options: RequestOptions = {}): Promise<Record<string, string>> {
     // Client Type específico basado en el tipo de API
     const clientType = this.getClientTypeHeader();
@@ -109,7 +176,6 @@ class ApiClient {
 
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      //'Ocp-Apim-Subscription-Key': 'b5ab8d094a014fb6a5efec10dcace918',
       'Ocp-Apim-Subscription-Key': this.config.subscriptionKey,
       'X-API-Version': this.config.version!,
       'X-Client-Type': clientType,
@@ -133,7 +199,6 @@ class ApiClient {
         throw new AuthenticationError('Access token not found in session');
       }
 
-      //TODO:OJO Bearer ${session.accessToken}
       headers['Authorization'] = `Bearer ${session.accessToken}`;
 
       // Agregar contexto de usuario para auditoría (OBLIGATORIO)
@@ -146,15 +211,6 @@ class ApiClient {
         if (userContext.tenantId) {
           headers['X-Tenant-ID'] = userContext.tenantId;
         }
-
-        // Headers adicionales para Azure APIM
-        headers['X-User-Claims'] = btoa(
-          JSON.stringify({
-            sub: userContext.userId,
-            email: userContext.email,
-            tenant: userContext.tenantId,
-          }),
-        );
       } else {
         throw new AuthenticationError('User context not available');
       }
@@ -163,12 +219,25 @@ class ApiClient {
     return headers;
   }
 
+  /**
+   * Construye la URL completa del request a partir del endpoint relativo.
+   * @param {string} endpoint Endpoint relativo (con o sin slash inicial).
+   * @returns {string} URL absoluta a invocar.
+   */
   private getRequestUrl(endpoint: string): string {
     const cleanEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
     return `${this.config.baseURL}/${cleanEndpoint}`;
     //return `${this.config.baseURL}/${this.config.version}/${cleanEndpoint}`;
   }
 
+  /**
+   * Maneja la respuesta HTTP: parsea JSON/Text, mapea errores comunes y adjunta metadatos.
+   * Si la respuesta encaja con ApiResponse, retorna el objeto completo (no sólo value).
+   * @template T
+   * @param {Response} response Respuesta cruda de fetch.
+   * @returns {Promise<T>} Datos parseados.
+   * @throws {AuthenticationError|Error}
+   */
   private async handleResponse<T>(response: Response): Promise<T> {
     const contentType = response.headers.get('content-type');
     const isJson = contentType?.includes('application/json');
@@ -210,40 +279,43 @@ class ApiClient {
           }
           throw new AuthenticationError('Sesión expirada. Redirigiendo al login...');
 
-        case 403:
-          const error403 = new Error('Permisos insuficientes para esta operación.');
+        case 403: {
+          let error403 = new Error('Permisos insuficientes para esta operación.');
           (error403 as any).apiError = apiError;
           throw error403;
-
-        case 404:
+        }
+        case 404: {
           const error404 = new Error('Recurso no encontrado.');
           (error404 as any).apiError = apiError;
           throw error404;
-
-        case 429:
+        }
+        case 429: {
           const retryAfter = response.headers.get('Retry-After');
           const error429 = new Error(
             `Límite de solicitudes excedido. ${retryAfter ? `Reintente en ${retryAfter} segundos.` : 'Intente más tarde.'}`,
           );
           (error429 as any).apiError = apiError;
           throw error429;
-
-        case 500:
+        }
+        case 500: {
           const error500 = new Error('Error interno del servidor. Contacte soporte técnico.');
           (error500 as any).apiError = apiError;
           throw error500;
+        }
 
         case 502:
         case 503:
-        case 504:
+        case 504: {
           const error5xx = new Error('Servicio temporalmente no disponible. Intente más tarde.');
           (error5xx as any).apiError = apiError;
           throw error5xx;
+        }
 
-        default:
+        default: {
           const errorDefault = new Error(apiError.message);
           (errorDefault as any).apiError = apiError;
           throw errorDefault;
+        }
       }
     }
 
@@ -267,6 +339,12 @@ class ApiClient {
   }
 
   // Validación previa obligatoria para todos los requests
+  /**
+   * Validación previa obligatoria: exige sesión válida si requireAuth o requireValidSession.
+   * @param {RequestOptions} [options]
+   * @returns {Promise<void>}
+   * @throws {AuthenticationError}
+   */
   private async validateRequest(options: RequestOptions = {}): Promise<void> {
     if (options.requireValidSession || (!options.skipAuth && this.config.requireAuth)) {
       const isValid = await this.validateSession();
@@ -276,6 +354,13 @@ class ApiClient {
     }
   }
 
+  /**
+   * Realiza un request HTTP genérico con headers, timeout, abort y manejo de respuesta.
+   * @template T
+   * @param {string} endpoint Endpoint relativo.
+   * @param {RequestOptions} [options] Opciones de la solicitud (método, headers, body, timeout...).
+   * @returns {Promise<T>} Resultado parseado.
+   */
   async request<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
     // Validación previa OBLIGATORIA
     await this.validateRequest(options);
@@ -343,10 +428,25 @@ class ApiClient {
   }
 
   // Métodos específicos con validación obligatoria
+  /**
+   * Realiza un GET con validación de sesión.
+   * @template T
+   * @param {string} endpoint
+   * @param {Omit<RequestOptions,'method'|'body'>} [options]
+   * @returns {Promise<T>}
+   */
   async get<T>(endpoint: string, options?: Omit<RequestOptions, 'method' | 'body'>): Promise<T> {
     return this.request<T>(endpoint, { ...options, method: 'GET', requireValidSession: true });
   }
 
+  /**
+   * Realiza un POST con validación de sesión.
+   * @template T
+   * @param {string} endpoint
+   * @param {any} [data] Cuerpo JSON serializable.
+   * @param {Omit<RequestOptions,'method'>} [options]
+   * @returns {Promise<T>}
+   */
   async post<T>(
     endpoint: string,
     data?: any,
@@ -360,6 +460,14 @@ class ApiClient {
     });
   }
 
+  /**
+   * Realiza un PUT con validación de sesión.
+   * @template T
+   * @param {string} endpoint
+   * @param {any} [data]
+   * @param {Omit<RequestOptions,'method'>} [options]
+   * @returns {Promise<T>}
+   */
   async put<T>(endpoint: string, data?: any, options?: Omit<RequestOptions, 'method'>): Promise<T> {
     return this.request<T>(endpoint, {
       ...options,
@@ -369,6 +477,14 @@ class ApiClient {
     });
   }
 
+  /**
+   * Realiza un PATCH con validación de sesión.
+   * @template T
+   * @param {string} endpoint
+   * @param {any} [data]
+   * @param {Omit<RequestOptions,'method'>} [options]
+   * @returns {Promise<T>}
+   */
   async patch<T>(
     endpoint: string,
     data?: any,
@@ -382,11 +498,24 @@ class ApiClient {
     });
   }
 
+  /**
+   * Realiza un DELETE con validación de sesión.
+   * @template T
+   * @param {string} endpoint
+   * @param {Omit<RequestOptions,'method'|'body'>} [options]
+   * @returns {Promise<T>}
+   */
   async delete<T>(endpoint: string, options?: Omit<RequestOptions, 'method' | 'body'>): Promise<T> {
     return this.request<T>(endpoint, { ...options, method: 'DELETE', requireValidSession: true });
   }
 
-  // Método especial para endpoints públicos (sin auth)
+  /**
+   * Request para endpoints públicos (omite autenticación) pero conserva headers comunes.
+   * @template T
+   * @param {string} endpoint
+   * @param {Omit<RequestOptions,'skipAuth'>} [options]
+   * @returns {Promise<T>}
+   */
   async publicRequest<T>(
     endpoint: string,
     options: Omit<RequestOptions, 'skipAuth'> = {},
@@ -394,18 +523,27 @@ class ApiClient {
     return this.request<T>(endpoint, { ...options, skipAuth: true });
   }
 
-  // Método para validar session manualmente
+  /**
+   * Valida manualmente la sesión actual.
+   * @returns {Promise<boolean>} true si la sesión es válida.
+   */
   async validateCurrentSession(): Promise<boolean> {
     return this.validateSession();
   }
 
-  // Método para cancelar todas las solicitudes pendientes
+  /**
+   * Cancela todas las solicitudes pendientes mediante AbortController.
+   * @returns {void}
+   */
   cancelAllRequests(): void {
     this.abortControllers.forEach((controller) => controller.abort());
     this.abortControllers.clear();
   }
 
-  // Método para obtener información de configuración (sin datos sensibles)
+  /**
+   * Obtiene la configuración pública del cliente (sin datos sensibles como subscriptionKey).
+   * @returns {Omit<ApiClientConfig,'subscriptionKey'>}
+   */
   getConfig(): Omit<ApiClientConfig, 'subscriptionKey'> {
     return {
       name: this.config.name,
@@ -418,6 +556,9 @@ class ApiClient {
 }
 
 // Configuración de la Logical API única con scopes namespaceados
+/**
+ * Configuración de la API lógica y sus scopes por dominio.
+ */
 export const LOGICAL_API_CONFIG = {
   // Una sola audience que representa ambas APIs
   audience: process.env.AUTH0_AUDIENCE || 'saas-system-api',
@@ -441,6 +582,10 @@ export const LOGICAL_API_CONFIG = {
 };
 
 // Función para obtener todos los scopes en una sola string
+/**
+ * Retorna todos los scopes requeridos por el sistema (incluye openid, profile, email).
+ * @returns {string} Scopes concatenados en una sola string separados por espacio.
+ */
 export function getAllScopes(): string {
   const allScopes = [
     'openid',
@@ -455,11 +600,24 @@ export function getAllScopes(): string {
 }
 
 // Función para obtener scopes específicos por dominio
+/**
+ * Obtiene scopes específicos por dominio (business | admin | system).
+ * @param {keyof typeof LOGICAL_API_CONFIG.scopes} domain Dominio.
+ * @returns {string[]} Lista de scopes.
+ */
 export function getScopesByDomain(domain: keyof typeof LOGICAL_API_CONFIG.scopes): string[] {
   return LOGICAL_API_CONFIG.scopes[domain] || [];
 }
 
 // Función para verificar permisos con scopes namespaceados
+/**
+ * Verifica si el usuario posee un permiso específico compuesto por dominio:acción[:recurso].
+ * @param {string[]} userPermissions Lista de permisos del usuario.
+ * @param {string} domain Dominio (p. ej., system, admin, business).
+ * @param {string} action Acción (read, create, update, delete).
+ * @param {string} resource Recurso opcional para granularidad adicional.
+ * @returns {boolean}
+ */
 export function hasPermission(
   userPermissions: string[],
   domain: string,
@@ -472,6 +630,11 @@ export function hasPermission(
 }
 
 // Validar configuración de environment (mejorado)
+/**
+ * Valida que las variables de entorno requeridas estén presentes.
+ * En server-side, también valida las subscription keys privadas.
+ * @throws {Error} Si faltan variables requeridas.
+ */
 function validateEnvironment() {
   const requiredVars = ['NEXT_PUBLIC_APIM_ADMIN_BASE_URL', 'NEXT_PUBLIC_APIM_BUSINESS_BASE_URL'];
 
@@ -497,6 +660,11 @@ if (typeof window === 'undefined') {
 }
 
 // Factory function para crear clientes seguros
+/**
+ * Crea un ApiClient con requireAuth forzado a true.
+ * @param {ApiClientConfig} config
+ * @returns {ApiClient}
+ */
 export function createSecureApiClient(config: ApiClientConfig): ApiClient {
   return new ApiClient({
     ...config,
@@ -505,6 +673,11 @@ export function createSecureApiClient(config: ApiClientConfig): ApiClient {
 }
 
 // Factory functions para crear clientes dinámicamente
+/**
+ * Crea un ApiClient para la Admin API (server-side) usando variables privadas.
+ * @returns {ApiClient}
+ * @throws {Error} Si faltan variables de entorno.
+ */
 export function createAdminApiClient(): ApiClient {
   const baseURL = process.env.NEXT_PUBLIC_APIM_ADMIN_BASE_URL;
   const subscriptionKey = process.env.APIM_ADMIN_SUBSCRIPTION_KEY;
@@ -524,6 +697,11 @@ export function createAdminApiClient(): ApiClient {
   });
 }
 
+/**
+ * Crea un ApiClient para la Business API (server-side) usando variables privadas.
+ * @returns {ApiClient}
+ * @throws {Error} Si faltan variables de entorno.
+ */
 export function createBusinessApiClient(): ApiClient {
   const baseURL = process.env.NEXT_PUBLIC_APIM_BUSINESS_BASE_URL;
   const subscriptionKey = process.env.APIM_BUSINESS_SUBSCRIPTION_KEY;
@@ -547,6 +725,11 @@ export function createBusinessApiClient(): ApiClient {
 let adminClientInstance: ApiClient | null = null;
 let businessClientInstance: ApiClient | null = null;
 
+/**
+ * Retorna un singleton de ApiClient para Admin API (server-side only).
+ * @returns {ApiClient}
+ * @throws {Error} Si se invoca desde el cliente.
+ */
 export function getAdminApiClient(): ApiClient {
   if (typeof window !== 'undefined') {
     throw new Error('Admin API client can only be used on the server side');
@@ -558,6 +741,11 @@ export function getAdminApiClient(): ApiClient {
   return adminClientInstance;
 }
 
+/**
+ * Retorna un singleton de ApiClient para Bussines API (server-side only).
+ * @returns {ApiClient}
+ * @throws {Error} Si se invoca desde el cliente.
+ */
 export function getBusinessApiClient(): ApiClient {
   if (typeof window !== 'undefined') {
     throw new Error('Business API client can only be used on the server side');
