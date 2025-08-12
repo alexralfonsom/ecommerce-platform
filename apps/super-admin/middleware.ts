@@ -10,7 +10,7 @@ import {
   validateLocale,
   ensureLocaleCookie,
   getI18nDebugInfo,
-} from '@repo/shared/lib/utils/i18nUtils';
+} from '@repo/shared/lib/utils';
 
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;

@@ -5,10 +5,15 @@ import Auth0Provider from 'next-auth/providers/auth0';
 import AzureADB2CProvider from 'next-auth/providers/azure-ad-b2c';
 import { i18n } from '@repo/shared/configs/i18n';
 import { generalSettings } from '@repo/shared/configs/generalSettings';
+import { APP_ROUTES } from '@repo/shared/configs/routes';
 import { isAuth0Enabled, isAzureB2CEnabled, isCredentialsEnabled } from '@repo/shared/configs/authConfig';
 import { ExtendedUser } from '@repo/shared/types/auth';
+import { getAllScopes, LOGICAL_API_CONFIG } from '@repo/shared/lib/api';
+import * as process from 'node:process';
+import { setAuth0LogoutCookie } from '../../../../lib/auth/auth0-logout-cookie';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const API_URL = process.env.NEXT_PUBLIC_APIM_BUSINESS_BASE_URL || 'http://localhost:5000/saas';
+const API_ADM_URL = process.env.NEXT_PUBLIC_APIM_ADMIN_BASE_URL || 'http://localhost:7000/admin';
 
 function getProviders() {
   const providers = [];
@@ -76,8 +81,9 @@ function getProviders() {
         issuer: process.env.AUTH0_ISSUER_BASE_URL!,
         authorization: {
           params: {
-            audience: process.env.AUTH0_AUDIENCE,
-            scope: 'openid profile email',
+            audience: LOGICAL_API_CONFIG.audience,
+            scope: getAllScopes(),
+            // Removido prompt: 'consent' para evitar pantalla de autorización
           },
         },
       }),
@@ -107,7 +113,7 @@ export const authOptions: NextAuthOptions = {
     error: '/auth/error',
   },
   callbacks: {
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account, profile })  {
       if (account && user) {
         if (account.access_token) {
           token.accessToken = account.access_token;
@@ -123,13 +129,15 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id || user.sub || 'unknown';
         token.provider = account.provider;
 
-        // Guardar id_token y client_id para Auth0 logout
-        if (account.provider === 'auth0') {
-          token.id_token = account.id_token;
-          token.client_id = process.env.AUTH0_CLIENT_ID;
-        }
+        // Guardar id_token y client_id para Auth0 logout en cookie separada
+        if (account.provider === 'auth0' && account.id_token) {
+          // Guardar en cookie separada y segura
+          await setAuth0LogoutCookie({
+            id_token: account.id_token,
+            client_id: process.env.AUTH0_CLIENT_ID!,
+          });
 
-        console.log(token.accessToken);
+        }
         console.log(
           `Token created - Expires at: ${new Date(token.expiresAt as number).toISOString()}`,
         );
@@ -138,14 +146,49 @@ export const authOptions: NextAuthOptions = {
           `Time until expiry: ${((token.expiresAt as number) - Date.now()) / 1000 / 60} minutes`,
         );
 
-        // if (account?.id_token) {
-        //   const decoded = jwtDecode(account.id_token);
-        //   token.roles = decoded['https://your-app.com/roles'] || [];
-        // }
+        // Extraer permisos del access_token para Auth0
+        if (account?.access_token && account.provider === 'auth0') {
+          const decodedToken = decodeJWT(account.access_token);
+          console.log('Decoded JWT:', decodedToken);
+          if (decodedToken) {
+            token.permissions = decodedToken['http://saas_startia.tech/permissions'] || [];
+            //token.role = decodedToken['http://saas_startia.tech/roles'] || [];
+            
+            // Extraer solo tenantId desde claims personalizados o profile metadata
+            token.tenantId = decodedToken['http://saas_startia.tech/tenant_id'] ||
+                            (profile as any)?.user_metadata?.tenant_id || 
+                            'default_tenant';
+            
+            console.log('🔐 Extracted permissions from JWT:', token.permissions);
+            console.log('🏢 Tenant ID:', token.tenantId);
+            console.log('👤 Platform Role:', token.role);
 
-        // Si viene de Auth0, sincronizar con tu API
+          }
+        }
+
+        // Si viene de Auth0, cargar roles de app dinámicamente
         if (account.provider === 'auth0') {
-          //  await syncAuth0User(user, account);
+          try {
+            const appRolesResponse = await fetch(`${API_ADM_URL}/users/app-roles`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                auth0Id: user.id,
+                email: user.email,
+                tenantId: token.tenantId
+              })
+            });
+            
+            if (appRolesResponse.ok) {
+              const appData = await appRolesResponse.json();
+              token.appRoles = appData.roles || [];
+              token.appPermissions = appData.permissions || [];
+            }
+          } catch (error) {
+            console.error('Error loading app roles:', error);
+            token.appRoles = [];
+            token.appPermissions = [];
+          }
         }
         // Sincronizar usuario con tu base de datos .NET Core
         // const syncResult = await syncUserWithDotNetAPI({
@@ -185,12 +228,20 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       const user = session.user as ExtendedUser;
       if (token && user) {
+        // Solo campos esenciales en la sesión del cliente (cookie principal)
         user.id = token.id || user.id || '';
-        user.role = token.role;
         user.provider = token.provider;
+        user.tenantId = token.tenantId as string;
+        
+        // Auth0 ya envía los permisos correctos, los usamos directamente  
+        user.permissions = token.permissions as string[] || [];
         session.accessToken = typeof token.accessToken === 'string' ? token.accessToken : undefined;
-        session.id_token = typeof token.id_token === 'string' ? token.id_token : undefined;
-        session.client_id = typeof token.client_id === 'string' ? token.client_id : undefined;
+        session.tokenExpires = typeof token.tokenExpires === 'number' ? token.tokenExpires : undefined;
+        
+        // Indicar si hay errores
+        if (token.error) {
+          session.error = token.error;
+        }
       }
       return session;
     },
@@ -204,7 +255,7 @@ export const authOptions: NextAuthOptions = {
       } else if (new URL(url).origin === baseUrl) {
         return url;
       }
-      return `${baseUrl}/${i18n.defaultLocale}/dashboard`;
+      return APP_ROUTES.getDefaultRouteForLocale(i18n.defaultLocale);
     },
   },
   events: {
@@ -230,6 +281,27 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   debug: process.env.NODE_ENV === 'development',
 };
+
+// Función para decodificar JWT y extraer permisos
+function decodeJWT(token: string) {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map(function(c) {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        })
+        .join('')
+    );
+
+    return JSON.parse(jsonPayload);
+  } catch (error) {
+    console.error('Error decoding JWT:', error);
+    return null;
+  }
+}
 
 // Función para sincronizar usuario con tu API .NET Core
 async function syncUserWithDotNetAPI({
@@ -294,7 +366,7 @@ async function syncUserWithDotNetAPI({
 // NUEVA función para sincronizar usuarios Auth0
 // async function syncAuth0User(user: any, account: any) {
 //   try {
-//     await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/sync-auth0-user`, {
+//     await fetch(`${process.env.NEXT_PUBLIC_APIM_BUSINESS_BASE_URL}/auth/sync-auth0-user`, {
 //       method: 'POST',
 //       headers: { 'Content-Type': 'application/json' },
 //       body: JSON.stringify({
@@ -331,6 +403,8 @@ async function refreshAuth0Token(token: any) {
         client_id: process.env.AUTH0_CLIENT_ID!,
         client_secret: process.env.AUTH0_CLIENT_SECRET!,
         refresh_token: token.refreshToken,
+        audience: LOGICAL_API_CONFIG.audience,
+        scope: getAllScopes()
       }),
     });
 
@@ -345,6 +419,7 @@ async function refreshAuth0Token(token: any) {
       accessToken: tokens.access_token,
       expiresAt: Date.now() + tokens.expires_in * 1000, // Mantener en milisegundos
       refreshToken: tokens.refresh_token ?? token.refreshToken,
+      error: undefined,
     };
   } catch (error) {
     console.error('Error refreshing Auth0 token:', error);

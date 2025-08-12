@@ -3,7 +3,7 @@
 // ===============================
 
 import { IMaestroCatalogo } from '@components/features/catalogos/types/MaestroCatalogosTypes';
-import { ApiResponse, PagedResult } from '@repo/shared/types/api';
+import { ApiResponse, PagedApiResponse, ListApiResponse } from '@repo/shared/types/api';
 
 export interface IMaestroCatalogoDetalle {
   id: number;
@@ -44,6 +44,7 @@ export interface MaestroCatalogosDetalleParameters {
   incluirInactivos?: boolean;
   orderBy?: string;
   orderDirection?: 'asc' | 'desc';
+  parentId?: number; // Para compatibilidad con useGenericCRUD
 }
 
 // ===============================
@@ -51,7 +52,5 @@ export interface MaestroCatalogosDetalleParameters {
 // ===============================
 
 export type MaestroCatalogoDetalleResponse = ApiResponse<IMaestroCatalogoDetalle>;
-export type MaestroCatalogosDetalleListResponse = ApiResponse<IMaestroCatalogoDetalle[]>;
-export type MaestroCatalogosDetallePagedResponse = ApiResponse<
-  PagedResult<IMaestroCatalogoDetalle>
->;
+export type MaestroCatalogosDetalleListResponse = ListApiResponse<IMaestroCatalogoDetalle>;
+export type MaestroCatalogosDetallePagedResponse = PagedApiResponse<IMaestroCatalogoDetalle>;

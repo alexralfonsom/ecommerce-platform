@@ -13,6 +13,7 @@ export interface AuthTokens {
   accessToken?: string;
   refreshToken?: string;
   tokenExpires?: number;
+  idToken?: string;
 }
 
 //  Tipos de proveedores
@@ -28,8 +29,19 @@ export interface ExtendedUser extends BaseUser, AuthTokens, ProviderInfo {
 
   // Campos específicos de API .NET Core
   tenantId?: string;
-  organizationId?: string;
   permissions?: string[];
+  
+  // Roles de aplicación NO van en sesión (se cargan on-demand)
+  // appRoles?: string[];
+  // appPermissions?: string[];
+  
+  // organizationId removido por ahora (no se usa)
+  
+  // Campos para auditoría
+  internalUserId?: string;
+  fullName?: string;
+  department?: string;
+  position?: string;
 }
 
 export interface ExtendedSession {
@@ -37,9 +49,13 @@ export interface ExtendedSession {
   // tokens y campos adicionales
   accessToken?: string; // Disponible en la sesión
   tokenExpires?: number;
-  id_token?: string; // idToken
-  client_id?: string; // Client ID
   error?: string;
+  
+  // Auth0 logout data en cookie separada
+  auth0Logout?: {
+    id_token: string;
+    client_id: string;
+  };
 }
 
 export interface ExtendedJWT extends AuthTokens {
@@ -51,7 +67,16 @@ export interface ExtendedJWT extends AuthTokens {
   tenantId?: string;
   organizationId?: string;
   permissions?: string[];
+  
+  // Roles y permisos de aplicación (dinámicos)
+  appRoles?: string[];
+  appPermissions?: string[];
+  
   error?: string;
+
+  // Campos adicionales para auditoría
+  internalUserId?: string;
+  fullName?: string;
 }
 
 // Note: Global module declarations are now handled in the consuming package's .d.ts files

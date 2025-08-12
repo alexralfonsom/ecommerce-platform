@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import '@repo/tailwind-configs';
 
 export default async function ErrroTest() {
   return (

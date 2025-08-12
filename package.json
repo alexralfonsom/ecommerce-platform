@@ -13,7 +13,7 @@
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "type-check": "turbo type-check",
-    "clean": "turbo clean && rm -rf node_modules",
+    "clean": "turbo clean && rm -rf node_modules dist",
     "dev:admin": "turbo dev --filter=tenant-admin",
     "dev:store": "turbo dev --filter=tenant-store",
     "dev:super": "turbo dev --filter=super-admin",
@@ -28,10 +28,10 @@
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.6.14",
     "turbo": "^2.5.5",
-    "typescript": "^5.8.3"
+    "typescript": "^5.9.2"
   },
   "keywords": [],
   "author": "Alex R Alfonso M",
   "license": "ISC",
-  "packageManager": "pnpm@10.13.1"
+  "packageManager": "pnpm@10.14.0"
 }

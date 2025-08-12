@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@repo/ui';
 import {
@@ -115,6 +115,8 @@ interface UseCatalogosReturn {
   isExporting: boolean;
 }
 
+const fallbackData: IMaestroCatalogo[] = [];
+
 export function useCatalogos({
   data,
   loading = false,
@@ -127,14 +129,7 @@ export function useCatalogos({
   const router = useRouter();
   const toast = useToast();
   const { exportSelected: performExport, isExporting } = useExport();
-  // Control de montaje para evitar state updates en componentes desmontados
-  const isMountedRef = useRef(true);
-
-  useEffect(() => {
-    return () => {
-      isMountedRef.current = false;
-    };
-  }, []);
+  // ✅ React moderno: TanStack Query ya maneja el cleanup automáticamente
   // ===============================
   // ESTADOS DE TABLA
   // ===============================
@@ -406,8 +401,10 @@ export function useCatalogos({
 
   // MEMOIZAR DATA PARA EVITAR RE-CREACIÓN DE TABLE
   const memoizedData = useMemo(() => {
-    return data || [];
+    return data || fallbackData;
   }, [data]);
+
+  //const memoizedData = data || fallbackData;
 
   // Crear las acciones memoizadas
   const tableActions = useMemo(
@@ -436,32 +433,13 @@ export function useCatalogos({
       columnVisibility,
       pagination,
     },
-    // 🔧 HANDLERS OBLIGATORIOS - Protegidos contra state updates en componentes desmontados
-    onPaginationChange: useCallback((updaterOrValue: PaginationState | ((old: PaginationState) => PaginationState)) => {
-      if (isMountedRef.current) {
-        setPagination(updaterOrValue);
-      }
-    }, []),
-    onSortingChange: useCallback((updaterOrValue: SortingState | ((old: SortingState) => SortingState)) => {
-      if (isMountedRef.current) {
-        setSorting(updaterOrValue);
-      }
-    }, []),
-    onColumnFiltersChange: useCallback((updaterOrValue: ColumnFiltersState | ((old: ColumnFiltersState) => ColumnFiltersState)) => {
-      if (isMountedRef.current) {
-        setColumnFilters(updaterOrValue);
-      }
-    }, []),
-    onRowSelectionChange: useCallback((updaterOrValue: Record<string, boolean> | ((old: Record<string, boolean>) => Record<string, boolean>)) => {
-      if (isMountedRef.current) {
-        setRowSelection(updaterOrValue);
-      }
-    }, []),
-    onColumnVisibilityChange: useCallback((updaterOrValue: VisibilityState | ((old: VisibilityState) => VisibilityState)) => {
-      if (isMountedRef.current) {
-        setColumnVisibility(updaterOrValue);
-      }
-    }, []),
+    // 🔧 HANDLERS ESTABLES - Sin useCallback para evitar problemas de cleanup
+    onPaginationChange: memoizedData.length > 0 ? setPagination : undefined,
+    onSortingChange: memoizedData.length > 0 ? setSorting : undefined,
+    onColumnFiltersChange: memoizedData.length > 0 ? setColumnFilters : undefined,
+    onRowSelectionChange: memoizedData.length > 0 ? setRowSelection : undefined,
+    onColumnVisibilityChange: memoizedData.length > 0 ? setColumnVisibility : undefined,
+
 
     // 🔧 CONFIGURACIÓN DE FUNCIONALIDADES
     enableRowSelection: true,
@@ -471,6 +449,7 @@ export function useCatalogos({
     enableGlobalFilter: false,
     enableColumnResizing: true,
     columnResizeMode: 'onChange',
+    autoResetPageIndex: false,
 
     // 🔧 MODELOS DE TABLA (ORDEN IMPORTANTE)
     getCoreRowModel: getCoreRowModel(),

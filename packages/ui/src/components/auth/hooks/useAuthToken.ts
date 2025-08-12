@@ -1,35 +1,52 @@
 // src/hooks/useAuthToken.ts
 'use client';
 
-import { useSession } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 import { useEffect } from 'react';
-import { setApiToken } from '@repo/shared/lib/api/client';
+import { getUniversalBusinessApiClient } from '@repo/shared/lib/api';
+import { ExtendedSession } from '@repo/shared/types/auth';
 
 export const useAuthToken = () => {
   const { data: session, status } = useSession();
+  const extendedSession = session as ExtendedSession | null;
 
   useEffect(() => {
-    if (status === 'authenticated' && session?.accessToken) {
-      // Establecer el token en el cliente Axios
-      setApiToken(session.accessToken);
-    } else if (status === 'unauthenticated') {
-      // Limpiar el token si no está autenticado
-      setApiToken(null);
-    }
-
     // Manejar errores de token
-    if (session?.error === 'RefreshAccessTokenError') {
+    if (extendedSession?.error === 'RefreshAccessTokenError') {
       console.error('Error al refrescar token, redirigiendo al login...');
-      // Opcional: forzar logout
-      // signOut({ callbackUrl: '/auth/signin' });
+      // Forzar logout cuando el token no se puede refrescar
+      signOut({ 
+        callbackUrl: '/auth/signin?error=token_refresh_failed',
+        redirect: true 
+      });
     }
-  }, [session, status]);
+  }, [extendedSession]);
+
+  // Función para validar si las APIs pueden conectarse
+  const validateApiConnection = async (): Promise<boolean> => {
+    try {
+      if (status !== 'authenticated' || !extendedSession?.accessToken) {
+        return false;
+      }
+      
+      // Validar que el cliente puede hacer requests
+      const isValid = await getUniversalBusinessApiClient().validateCurrentSession();
+      return isValid;
+    } catch (error) {
+      console.error('API validation failed:', error);
+      return false;
+    }
+  };
 
   return {
-    isAuthenticated: status === 'authenticated',
+    isAuthenticated: status === 'authenticated' && !!extendedSession?.accessToken,
     isLoading: status === 'loading',
-    token: session?.accessToken,
-    user: session?.user,
-    error: session?.error,
+    token: extendedSession?.accessToken,
+    user: extendedSession?.user,
+    error: extendedSession?.error,
+    // Nuevas utilidades
+    validateApiConnection,
+    hasValidToken: !!extendedSession?.accessToken,
+    isTokenExpired: extendedSession?.error === 'RefreshAccessTokenError',
   };
 };

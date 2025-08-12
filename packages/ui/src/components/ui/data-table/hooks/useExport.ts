@@ -1,7 +1,7 @@
 'use client';
 import { useCallback, useState } from 'react';
 import { useToast } from '@components/ui/Toast';
-import { ExportUtils } from '@repo/shared/lib/utils/exportUtils';
+import { ExportUtils } from '@repo/shared/lib/utils';
 import type {
   ExportData,
   ExportFormat,

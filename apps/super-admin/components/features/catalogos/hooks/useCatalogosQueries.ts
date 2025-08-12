@@ -5,7 +5,21 @@ import {
   IUpdateMaestroCatalogoRequest,
   MaestroCatalogosParameters,
 } from '@components/features/catalogos/types/MaestroCatalogosTypes';
-import { useGenericCRUD } from '@repo/shared/lib/hooks/queries/useGenericCRUD';
+import { useGenericCRUD } from '@repo/shared/lib/hooks';
+
+// Tipos explícitos para resolver el error TS2742
+type CatalogosQueriesReturn = ReturnType<
+  typeof useGenericCRUD<
+    IMaestroCatalogo,
+    ICreateMaestroCatalogoRequest,
+    IUpdateMaestroCatalogoRequest,
+    MaestroCatalogosParameters
+  >
+>;
+
+type CatalogosOperationsReturn = ReturnType<CatalogosQueriesReturn['usePagedOperations']>;
+type CatalogosSimpleReturn = ReturnType<CatalogosQueriesReturn['useOperations']>;
+type CatalogoByIdReturn = ReturnType<CatalogosQueriesReturn['useById']>;
 
 // ===============================
 // CONFIGURACIÓN ESPECÍFICA PARA CATÁLOGOS
@@ -19,8 +33,7 @@ const catalogosConfig = {
     getPaged: maestroCatalogosApi.getPaged,
     getById: maestroCatalogosApi.getById,
     create: maestroCatalogosApi.create,
-    update: (id: number, data: IUpdateMaestroCatalogoRequest) =>
-      maestroCatalogosApi.update(id, data),
+    update: maestroCatalogosApi.update,
     delete: maestroCatalogosApi.delete,
   },
   options: {
@@ -37,91 +50,33 @@ const catalogosConfig = {
 // HOOK PRINCIPAL PARA CATÁLOGOS
 // ===============================
 
-export const useCatalogosQueries = () => {
-  const crud = useGenericCRUD<
+export const useCatalogosQueries = (): CatalogosQueriesReturn => {
+  return useGenericCRUD<
     IMaestroCatalogo,
     ICreateMaestroCatalogoRequest,
     IUpdateMaestroCatalogoRequest,
     MaestroCatalogosParameters
   >(catalogosConfig);
-
-  // Hook específico para toggle status
-  const useToggleStatus = () => {
-    return crud.useCustomMutation(
-      async (id: number) => {
-        await maestroCatalogosApi.toggleStatus(id);
-      },
-      {
-        invalidateLists: true,
-        invalidateDetails: true,
-      },
-    );
-  };
-
-  return {
-    ...crud,
-    useToggleStatus,
-  };
 };
 
 // ===============================
 // 🎯 HOOKS DE CONVENIENCIA (EXPORTADOS)
 // ===============================
 
-// 🔥 RECOMENDADO: Hook principal para uso general
-export const useCatalogosOperations = (params?: MaestroCatalogosParameters) => {
-  const { usePagedOperations, useToggleStatus } = useCatalogosQueries();
-  const toggleStatus = useToggleStatus();
-  return {
-    ...usePagedOperations(params),
-    toggleStatus: (
-      id: number,
-      options?: {
-        onSuccess?: (data?: any) => void;
-        onError?: (error: any) => void;
-      },
-    ) => {
-      toggleStatus.mutate(id, {
-        onSuccess: (data) => {
-          options?.onSuccess?.(data);
-        },
-        onError: (error) => {
-          options?.onError?.(error);
-        },
-      });
-    },
-    isToggling: toggleStatus.isPending,
-  };
+// 🔥 RECOMENDADO: Hook principal para uso general con paginación
+export const useCatalogosOperations = (params?: MaestroCatalogosParameters): CatalogosOperationsReturn => {
+  const { usePagedOperations } = useCatalogosQueries();
+  return usePagedOperations(params);
 };
 
-// Para casos específicos donde necesites lista simple
-export const useCatalogosSimple = (params?: MaestroCatalogosParameters) => {
-  const { useOperations, useToggleStatus } = useCatalogosQueries();
-  const toggleStatus = useToggleStatus();
-  return {
-    ...useOperations(params),
-    toggleStatus: (
-      id: number,
-      options?: {
-        onSuccess?: (data?: any) => void;
-        onError?: (error: any) => void;
-      },
-    ) => {
-      toggleStatus.mutate(id, {
-        onSuccess: (data) => {
-          options?.onSuccess?.(data);
-        },
-        onError: (error) => {
-          options?.onError?.(error);
-        },
-      });
-    },
-    isToggling: toggleStatus.isPending,
-  };
+// Para casos específicos donde necesites lista simple sin paginación
+export const useCatalogosSimple = (params?: MaestroCatalogosParameters): CatalogosSimpleReturn => {
+  const { useOperations } = useCatalogosQueries();
+  return useOperations(params);
 };
 
-// Para obtener un catálogo específico
-export const useCatalogo = (id: number | null) => {
+// Para obtener un catálogo específico por ID (exportado para casos específicos)
+export const useCatalogo = (id: number | null): CatalogoByIdReturn => {
   const { useById } = useCatalogosQueries();
   return useById(id);
 };

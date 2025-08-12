@@ -6,7 +6,7 @@ import { HeaderAction } from '@repo/shared/types/PagesHeader';
 import { useTranslations } from 'next-intl';
 import React, { useMemo, useState } from 'react';
 import { useToast } from '@repo/ui';
-import { cn } from '@repo/shared/lib/utils/cn';
+import { cn } from '@repo/shared';
 import { createStatCardItem, StatCard } from '@repo/ui';
 import { Backgrounds, Borders } from '@repo/ui/configs/DesignSystem';
 import { CatalogoList } from '@components/features/catalogos/CatalogoList';
@@ -17,11 +17,10 @@ import { DeleteConfirmDialog } from '@repo/ui';
 import { useDeleteDialogDescription } from '@repo/shared/lib/hooks';
 
 export default function Catalogos() {
-  const [currentPage, setCurrentPage] = useState(1);
   const toast = useToast();
   const t = useTranslations('catalogs');
 
-  // ✅ 1. DATA LAYER: Obtener datos de la API
+  // ✅ 1. DATA LAYER: Obtener TODOS los datos de la API (sin paginación del servidor)
   const {
     items, // Array de catálogos desde tu API .NET Core
     //totalCount, // Total de registros
@@ -47,11 +46,8 @@ export default function Catalogos() {
     isDeleting, // true cuando está eliminando
 
     // Funcionalidades específicas de catálogos
-    toggleStatus,
-    isToggling,
   } = useCatalogosSimple({
-    pageNumber: currentPage,
-    pageSize: 10,
+    // Sin paginación del servidor - obtener todos los datos
     incluirInactivos: true,
   });
 
@@ -73,7 +69,6 @@ export default function Catalogos() {
     data: items,
     loading: isLoading,
     onRefresh: refetch,
-    toggleStatus,
     deleteCatalogo: deleteCatalogo,
     createCatalogo: create,
     updateCatalogo: update,
@@ -97,7 +92,7 @@ export default function Catalogos() {
   // ✅ STAT CARDS
   const statCardItems = useMemo(() => {
     const totalCount = items?.length || 0;
-    const activeCount = items?.filter((item) => item.activo)?.length || 0;
+    const activeCount = items?.filter((item : any) => item.activo)?.length || 0;
     const inactiveCount = totalCount - activeCount;
     const recentModifiedCount = 10;
 
@@ -164,14 +159,14 @@ export default function Catalogos() {
   // 📊 COMPUTED DATA FOR STATS
   // ===============================
   const statsData = useMemo(() => {
-    const activeCatalogos = items.filter((c) => c.activo);
-    const inactiveCatalogos = items.filter((c) => !c.activo);
+    const activeCatalogos = items.filter((c : any) => c.activo);
+    const inactiveCatalogos = items.filter((c : any) => !c.activo);
 
     // Calcular "recientes" (últimos 7 días)
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
-    const recentCatalogos = items.filter((c) => {
+    const recentCatalogos = items.filter((c : any) => {
       const fechaModificacion = c.fechaCreacion;
       return new Date(fechaModificacion) > sevenDaysAgo;
     });

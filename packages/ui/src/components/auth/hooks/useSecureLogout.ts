@@ -3,9 +3,10 @@
 import { useCallback, useState } from 'react';
 import { signOut, useSession } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
-import { ExtendedSession, ExtendedUser } from '@repo/shared/types/auth';
+import { ExtendedSession } from '@repo/shared/types/auth';
 import { getCurrentAuthMode } from '@repo/shared/configs/authConfig';
 import { APP_ROUTES } from '@repo/shared/configs/routes';
+import { type Auth0LogoutData } from '@repo/shared';
 
 interface UseSecureLogoutOptions {
   redirectTo?: string;
@@ -42,17 +43,50 @@ export function useSecureLogout(options: UseSecureLogoutOptions = {}): UseSecure
       console.log('entro al logout', session);
       if (authMode === 'auth0' && session?.user?.provider === 'auth0') {
         console.log('entro al logout de Auth0');
-        // Construir URL de logout de Auth0
-        const redirectUrl = `${baseUrl}${APP_ROUTES.getSignOutRoute(locale)}`;
-        const auth0LogoutUrl = `${process.env.NEXT_PUBLIC_AUTH0_ISSUER_BASE_URL}/oidc/logout?id_token_hint=${session?.id_token}&client_id=${session?.client_id}&post_logout_redirect_uri=${encodeURIComponent(redirectUrl)}`;
 
-        console.log('Redirecting to Auth0 logout:', auth0LogoutUrl);
-        // Hacer signOut de NextAuth primero
+        try {
+          // Obtener datos de logout de la cookie separada via API
+          const response = await fetch('/api/auth/get-auth0-cookie', {
+            method: 'GET',
+            credentials: 'include',
+          });
+
+          if (response.ok) {
+            const auth0LogoutData: Auth0LogoutData = await response.json();
+            console.log('Auth0 logout data found:', auth0LogoutData);
+
+            // Construir URL de logout de Auth0 usando datos de cookie separada
+            const redirectUrl = `${baseUrl}${APP_ROUTES.getSignOutRoute(locale)}`;
+            const auth0LogoutUrl = `${process.env.NEXT_PUBLIC_AUTH0_ISSUER_BASE_URL}/oidc/logout?id_token_hint=${auth0LogoutData.id_token}&client_id=${auth0LogoutData.client_id}&post_logout_redirect_uri=${encodeURIComponent(redirectUrl)}`;
+
+            console.log('Redirecting to Auth0 logout:', auth0LogoutUrl);
+
+            // Limpiar cookie de logout antes de hacer signOut
+            await fetch('/api/auth/clear-auth0-cookie', {
+              method: 'POST',
+              credentials: 'include',
+            });
+
+            // Hacer signOut de NextAuth primero
+            await signOut({
+              redirect: false,
+            });
+
+            // Redirigir al usuario a Auth0 para cerrar sesión SSO
+            window.location.href = auth0LogoutUrl;
+            return; // Salir early, no continuar con logout regular
+          } else {
+            console.warn('No Auth0 logout data found in cookie or API failed');
+          }
+        } catch (error) {
+          console.error('Error getting Auth0 logout data:', error);
+        }
+
+        // Fallback: logout regular si no hay datos de Auth0 o falla la API
+        console.log('Doing regular logout for Auth0 user');
         await signOut({
           redirect: false,
         });
-        // Redirigir al usuario a Auth0 para cerrar sesión SSO
-        window.location.href = auth0LogoutUrl;
       }
 
       options.onLogoutComplete?.();

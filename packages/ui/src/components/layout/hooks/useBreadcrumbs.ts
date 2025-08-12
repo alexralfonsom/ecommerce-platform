@@ -2,7 +2,7 @@
 import { useMemo } from 'react';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { getCurrentLocaleFromPath } from '@repo/shared/lib/utils/i18nUtils';
+import { getCurrentLocaleFromPath } from '@repo/shared/lib/utils';
 import { APP_ROUTES, ROUTE_CONFIG } from '@repo/shared/configs/routes';
 import { IBreadcrumbItem } from '@repo/shared/types/BreadcrumbTypes';
 

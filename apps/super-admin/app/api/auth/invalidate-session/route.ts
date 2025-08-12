@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
 // Función para invalidar sesión en tu base de datos
 async function invalidateUserSession(userId: string, provider: string) {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_APIM_BUSINESS_BASE_URL}/auth/logout`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -1,5 +1,7 @@
 // src/lib/api/endpoints/maestroCatalogos.ts
-import { apiClient } from '@repo/shared/lib/api/client';
+import { getUniversalBusinessApiClient } from '@repo/shared/lib/api';
+import { ApiResponse } from '@repo/shared/types/api';
+import { buildUrlWithParams } from '@repo/shared/lib/utils';
 import {
   API_ENDPOINTS_CATALOGS,
   ICreateMaestroCatalogoRequest,
@@ -14,54 +16,52 @@ export const maestroCatalogosApi = {
   /**
    * Obtiene todos los catálogos maestros (sin paginar)
    */
-  getAll: async (
-    params?: Partial<MaestroCatalogosParameters>,
-  ): Promise<MaestroCatalogosListResponse> => {
-    const response = await apiClient.get(API_ENDPOINTS_CATALOGS.MAESTRO_CATALOGOS, {
-      params: {
-        ...params,
-        getAllRecords: true,
-      },
+  getAll: async (): Promise<MaestroCatalogosListResponse> => {
+    const endpoint = buildUrlWithParams(API_ENDPOINTS_CATALOGS.MAESTRO_CATALOGOS, {
+      getAllRecords: true,
     });
-    return response.data;
+    return await getUniversalBusinessApiClient().get<MaestroCatalogosListResponse>(endpoint);
   },
 
   /**
    * Obtiene catálogos maestros paginados
    */
   getPaged: async (params?: MaestroCatalogosParameters): Promise<MaestroCatalogosPagedResponse> => {
-    const response = await apiClient.get(API_ENDPOINTS_CATALOGS.MAESTRO_CATALOGOS, { params });
-    return response.data;
+    const endpoint = buildUrlWithParams(API_ENDPOINTS_CATALOGS.MAESTRO_CATALOGOS, params);
+    return await getUniversalBusinessApiClient().get<MaestroCatalogosPagedResponse>(endpoint);
   },
 
   /**
    * Obtiene un catálogo maestro por ID
    */
   getById: async (id: number): Promise<MaestroCatalogoResponse> => {
-    const response = await apiClient.get(`${API_ENDPOINTS_CATALOGS.MAESTRO_CATALOGOS}/${id}`);
-    return response.data;
+    return await getUniversalBusinessApiClient().get<MaestroCatalogoResponse>(
+      `${API_ENDPOINTS_CATALOGS.MAESTRO_CATALOGOS}/${id}`,
+    );
   },
 
   /**
    * Crea un nuevo catálogo maestro
    */
   create: async (data: ICreateMaestroCatalogoRequest): Promise<MaestroCatalogoResponse> => {
-    const response = await apiClient.post(API_ENDPOINTS_CATALOGS.MAESTRO_CATALOGOS, data);
-    return response.data;
+    return await getUniversalBusinessApiClient().post<MaestroCatalogoResponse>(
+      API_ENDPOINTS_CATALOGS.MAESTRO_CATALOGOS,
+      data,
+    );
   },
 
   /**
    * Actualiza un catálogo maestro existente
    */
-  update: async (id: number, data: IUpdateMaestroCatalogoRequest): Promise<void> => {
-    await apiClient.put(`${API_ENDPOINTS_CATALOGS.MAESTRO_CATALOGOS}/${id}`, data);
+  update: async (id: number, data: IUpdateMaestroCatalogoRequest): Promise<ApiResponse<void>> => {
+    return await getUniversalBusinessApiClient().put(`${API_ENDPOINTS_CATALOGS.MAESTRO_CATALOGOS}/${id}`, data);
   },
 
   /**
    * Elimina un catálogo maestro
    */
-  delete: async (id: number): Promise<void> => {
-    await apiClient.delete(`${API_ENDPOINTS_CATALOGS.MAESTRO_CATALOGOS}/${id}`);
+  delete: async (id: number): Promise<ApiResponse<void>> => {
+    return await getUniversalBusinessApiClient().delete(`${API_ENDPOINTS_CATALOGS.MAESTRO_CATALOGOS}/${id}`);
   },
 
   /**

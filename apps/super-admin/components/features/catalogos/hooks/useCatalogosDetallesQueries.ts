@@ -5,7 +5,23 @@ import {
   IUpdateMaestroCatalogoDetalleRequest,
   MaestroCatalogosDetalleParameters,
 } from '@components/features/catalogos/types/MaestroCatalogosDetalleTypes';
-import { useGenericCRUDWithParent } from '@repo/shared/lib/hooks';
+import { useGenericCRUD } from '@repo/shared/lib/hooks';
+
+// Tipos explícitos para resolver el error TS2742
+type CatalogosDetalleQueriesReturn = ReturnType<
+  typeof useGenericCRUD<
+    IMaestroCatalogoDetalle,
+    ICreateMaestroCatalogoDetalleRequest,
+    IUpdateMaestroCatalogoDetalleRequest,
+    MaestroCatalogosDetalleParameters
+  >
+>;
+
+type CatalogosDetalleOperationsReturn = ReturnType<
+  CatalogosDetalleQueriesReturn['usePagedOperations']
+>;
+type CatalogosDetalleSimpleReturn = ReturnType<CatalogosDetalleQueriesReturn['useOperations']>;
+type CatalogoDetalleByIdReturn = ReturnType<CatalogosDetalleQueriesReturn['useById']>;
 
 // ===============================
 // CONFIGURACIÓN ESPECÍFICA PARA CATÁLOGOS DETALLES
@@ -15,21 +31,33 @@ const catalogosDetalleConfig = {
   entityName: 'catalogosDetalle',
   entityType: 'STABLE' as const,
   api: {
-    // Métodos que requieren parentId (idMaestro)
-    getAll: (idMaestro: number, incluirInactivos: boolean = false) =>
-      maestroCatalogosDetalleApi.getByMaestroId(idMaestro, incluirInactivos),
-    getPaged: (idMaestro: number, params?: MaestroCatalogosDetalleParameters) =>
-      maestroCatalogosDetalleApi.getPagedByMaestroId(idMaestro, params),
-
-    // Métodos estándar que no requieren parentId
+    // Adaptador para getAll que funciona con parentId
+    getAll: (params?: MaestroCatalogosDetalleParameters) => {
+      if (!params?.parentId) {
+        throw new Error('parentId (idMaestro) es requerido para obtener detalles');
+      }
+      return maestroCatalogosDetalleApi.getByMaestroId(
+        params.parentId,
+        params.incluirInactivos || false,
+      );
+    },
+    // Adaptador para getPaged que funciona con parentId
+    getPaged: (params?: MaestroCatalogosDetalleParameters) => {
+      if (!params?.parentId) {
+        throw new Error('parentId (idMaestro) es requerido para obtener detalles paginados');
+      }
+      return maestroCatalogosDetalleApi.getPagedByMaestroId(params.parentId, params);
+    },
     getById: maestroCatalogosDetalleApi.getById,
     create: maestroCatalogosDetalleApi.create,
-    update: (id: number, data: IUpdateMaestroCatalogoDetalleRequest) =>
-      maestroCatalogosDetalleApi.update(id, data),
+    // Usar respuestas reales del backend - no más adaptadores sintéticos
+    update: maestroCatalogosDetalleApi.update,
     delete: maestroCatalogosDetalleApi.delete,
   },
   options: {
     enableOptimisticUpdates: true,
+    requiresParent: true, // Los detalles requieren un parentId (idMaestro)
+    parentFieldName: 'parentId',
     customSuccessMessages: {
       create: 'Detalle creado exitosamente',
       update: 'Detalle actualizado exitosamente',
@@ -42,32 +70,13 @@ const catalogosDetalleConfig = {
 // HOOK PRINCIPAL PARA CATÁLOGOS DETALLES
 // ===============================
 
-export const useCatalogosDetalleQueries = () => {
-  const crud = useGenericCRUDWithParent<
+export const useCatalogosDetalleQueries = (): CatalogosDetalleQueriesReturn => {
+  return useGenericCRUD<
     IMaestroCatalogoDetalle,
     ICreateMaestroCatalogoDetalleRequest,
     IUpdateMaestroCatalogoDetalleRequest,
     MaestroCatalogosDetalleParameters
   >(catalogosDetalleConfig);
-
-  // Hook específico para toggle status de detalle
-  const useToggleStatus = (idMaestro: number | null) => {
-    return crud.useCustomMutation(
-      idMaestro,
-      async (id: number) => {
-        await maestroCatalogosDetalleApi.toggleStatus(id);
-      },
-      {
-        invalidateLists: true,
-        invalidateDetails: true,
-      },
-    );
-  };
-
-  return {
-    ...crud,
-    useToggleStatus,
-  };
 };
 
 // ===============================
@@ -77,70 +86,36 @@ export const useCatalogosDetalleQueries = () => {
 export const useCatalogosDetalleOperations = (
   idMaestro: number | null,
   params?: MaestroCatalogosDetalleParameters,
-) => {
-  const { usePagedOperations, useToggleStatus } = useCatalogosDetalleQueries();
-  const toggleStatus = useToggleStatus(idMaestro);
+): CatalogosDetalleOperationsReturn => {
+  const { usePagedOperations } = useCatalogosDetalleQueries();
 
-  return {
-    ...usePagedOperations(idMaestro, params),
-
-    // Acción personalizada para toggle status
-    toggleStatus: (
-      id: number,
-      options?: {
-        onSuccess?: (data?: any) => void;
-        onError?: (error: any) => void;
-      },
-    ) => {
-      toggleStatus.mutate(id, {
-        onSuccess: (data) => {
-          options?.onSuccess?.(data);
-        },
-        onError: (error) => {
-          options?.onError?.(error);
-        },
-      });
-    },
-
-    // Estados adicionales
-    isToggling: toggleStatus.isPending,
+  // Combinar idMaestro con params para el parentId
+  const finalParams = {
+    ...params,
+    parentId: idMaestro ?? undefined, // Convertir null a undefined
   };
+
+  return usePagedOperations(finalParams);
 };
 
 // Para casos específicos donde necesites lista simple (sin paginación)
 export const useCatalogosDetalleSimple = (
   idMaestro: number | null,
   incluirInactivos: boolean = false,
-) => {
-  const { useOperations, useToggleStatus } = useCatalogosDetalleQueries();
-  const toggleStatus = useToggleStatus(idMaestro);
+): CatalogosDetalleSimpleReturn => {
+  const { useOperations } = useCatalogosDetalleQueries();
 
-  return {
-    ...useOperations(idMaestro, incluirInactivos),
-
-    toggleStatus: (
-      id: number,
-      options?: {
-        onSuccess?: (data?: any) => void;
-        onError?: (error: any) => void;
-      },
-    ) => {
-      toggleStatus.mutate(id, {
-        onSuccess: (data) => {
-          options?.onSuccess?.(data);
-        },
-        onError: (error) => {
-          options?.onError?.(error);
-        },
-      });
-    },
-
-    isToggling: toggleStatus.isPending,
+  // Combinar idMaestro con incluirInactivos para el parentId
+  const params = {
+    parentId: idMaestro ?? undefined, // Convertir null a undefined
+    incluirInactivos,
   };
+
+  return useOperations(params);
 };
 
 // Hook específico solo para obtener un detalle por ID (sin dependencia del parent)
-export const useCatalogoDetalleById = (id: number | null) => {
+export const useCatalogoDetalleById = (id: number | null): CatalogoDetalleByIdReturn => {
   const { useById } = useCatalogosDetalleQueries();
   return useById(id);
 };

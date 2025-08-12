@@ -1,5 +1,5 @@
 // src/lib/api/endpoints/maestroCatalogosDetalles.ts
-import { apiClient } from '@repo/shared/lib/api/client';
+import { getUniversalBusinessApiClient } from '@repo/shared/lib/api';
 
 import {
   ICreateMaestroCatalogoDetalleRequest,
@@ -9,18 +9,20 @@ import {
   MaestroCatalogosDetallePagedResponse,
   MaestroCatalogosDetalleParameters,
 } from '@components/features/catalogos/types/MaestroCatalogosDetalleTypes';
+import { ApiResponse } from '@repo/shared/types/api';
 
-import { API_ENDPOINTS_CATALOGS } from '@components/features/catalogos/types/MaestroCatalogosTypes';
+import {
+  API_ENDPOINTS_CATALOGS,
+  MaestroCatalogosPagedResponse,
+} from '@components/features/catalogos/types/MaestroCatalogosTypes';
+import { buildUrlWithParams } from '@repo/shared/lib/utils';
 
 export const maestroCatalogosDetalleApi = {
   /**
    * Obtiene un detalle por ID
    */
   getById: async (id: number): Promise<MaestroCatalogoDetalleResponse> => {
-    const response = await apiClient.get(
-      `${API_ENDPOINTS_CATALOGS.MAESTRO_CATALOGOS_DETALLE}/${id}`,
-    );
-    return response.data;
+    return await getUniversalBusinessApiClient().get(`${API_ENDPOINTS_CATALOGS.MAESTRO_CATALOGOS_DETALLE}/${id}`);
   },
 
   /**
@@ -30,11 +32,14 @@ export const maestroCatalogosDetalleApi = {
     idMaestro: number,
     incluirInactivos: boolean = false,
   ): Promise<MaestroCatalogosDetalleListResponse> => {
-    const response = await apiClient.get(
+    const endpoint = buildUrlWithParams(
       `${API_ENDPOINTS_CATALOGS.MAESTRO_CATALOGOS_DETALLE}/${idMaestro}/detalles`,
-      { params: { incluirInactivos } },
+      {
+        getAllRecords: true,
+        incluirInactivos: incluirInactivos,
+      },
     );
-    return response.data;
+    return await getUniversalBusinessApiClient().get<MaestroCatalogosDetalleListResponse>(endpoint);
   },
 
   /**
@@ -44,11 +49,8 @@ export const maestroCatalogosDetalleApi = {
     idMaestro: number,
     params?: MaestroCatalogosDetalleParameters,
   ): Promise<MaestroCatalogosDetallePagedResponse> => {
-    const response = await apiClient.get(
-      `${API_ENDPOINTS_CATALOGS.MAESTRO_CATALOGOS_DETALLE}/${idMaestro}/detalles/paged`,
-      { params },
-    );
-    return response.data;
+    const endpoint = buildUrlWithParams(API_ENDPOINTS_CATALOGS.MAESTRO_CATALOGOS, params);
+    return await getUniversalBusinessApiClient().get<MaestroCatalogosDetallePagedResponse>(endpoint);
   },
 
   /**
@@ -58,11 +60,13 @@ export const maestroCatalogosDetalleApi = {
     nombreMaestro: string,
     incluirInactivos: boolean = false,
   ): Promise<MaestroCatalogosDetalleListResponse> => {
-    const response = await apiClient.get(
+    const endpoint = buildUrlWithParams(
       `${API_ENDPOINTS_CATALOGS.MAESTRO_CATALOGOS_DETALLE}/tipo/${encodeURIComponent(nombreMaestro)}/detalles`,
-      { params: { incluirInactivos } },
+      {
+        incluirInactivos: incluirInactivos,
+      },
     );
-    return response.data;
+    return await getUniversalBusinessApiClient().get<MaestroCatalogosDetalleListResponse>(endpoint);
   },
 
   /**
@@ -72,11 +76,11 @@ export const maestroCatalogosDetalleApi = {
     nombreMaestro: string,
     params?: MaestroCatalogosDetalleParameters,
   ): Promise<MaestroCatalogosDetallePagedResponse> => {
-    const response = await apiClient.get(
+    const endpoint = buildUrlWithParams(
       `${API_ENDPOINTS_CATALOGS.MAESTRO_CATALOGOS_DETALLE}/tipo/${encodeURIComponent(nombreMaestro)}/detalles/paged`,
-      { params },
+      params,
     );
-    return response.data;
+    return await getUniversalBusinessApiClient().get<MaestroCatalogosDetallePagedResponse>(endpoint);
   },
 
   /**
@@ -86,11 +90,13 @@ export const maestroCatalogosDetalleApi = {
     nombreMaestro: string,
     incluirInactivos: boolean = false,
   ): Promise<MaestroCatalogosDetalleListResponse> => {
-    const response = await apiClient.get(
+    const endpoint = buildUrlWithParams(
       `${API_ENDPOINTS_CATALOGS.MAESTRO_CATALOGOS_DETALLE}/dapper/nombre/${encodeURIComponent(nombreMaestro)}/detalles`,
-      { params: { incluirInactivos } },
+      {
+        incluirInactivos: incluirInactivos,
+      },
     );
-    return response.data;
+    return await getUniversalBusinessApiClient().get<MaestroCatalogosDetalleListResponse>(endpoint);
   },
 
   /**
@@ -100,11 +106,11 @@ export const maestroCatalogosDetalleApi = {
     nombreMaestro: string,
     params?: MaestroCatalogosDetalleParameters,
   ): Promise<MaestroCatalogosDetallePagedResponse> => {
-    const response = await apiClient.get(
+    const endpoint = buildUrlWithParams(
       `${API_ENDPOINTS_CATALOGS.MAESTRO_CATALOGOS_DETALLE}/dapper/nombre/${encodeURIComponent(nombreMaestro)}/detalles/paged`,
-      { params },
+      params,
     );
-    return response.data;
+    return await getUniversalBusinessApiClient().get<MaestroCatalogosDetallePagedResponse>(endpoint);
   },
 
   /**
@@ -113,25 +119,29 @@ export const maestroCatalogosDetalleApi = {
   create: async (
     data: ICreateMaestroCatalogoDetalleRequest,
   ): Promise<MaestroCatalogoDetalleResponse> => {
-    const response = await apiClient.post(
-      `${API_ENDPOINTS_CATALOGS.MAESTRO_CATALOGOS_DETALLE}/detalles`,
+    return await getUniversalBusinessApiClient().post<MaestroCatalogoDetalleResponse>(
+      API_ENDPOINTS_CATALOGS.MAESTRO_CATALOGOS_DETALLE,
       data,
     );
-    return response.data;
   },
 
   /**
    * Actualiza un detalle de catálogo existente
    */
-  update: async (id: number, data: IUpdateMaestroCatalogoDetalleRequest): Promise<void> => {
-    await apiClient.put(`${API_ENDPOINTS_CATALOGS.MAESTRO_CATALOGOS_DETALLE}/detalles/${id}`, data);
+  update: async (id: number, data: IUpdateMaestroCatalogoDetalleRequest): Promise<ApiResponse<void>> => {
+    return await getUniversalBusinessApiClient().put(
+      `${API_ENDPOINTS_CATALOGS.MAESTRO_CATALOGOS_DETALLE}/detalles/${id}`,
+      data,
+    );
   },
 
   /**
    * Elimina un detalle de catálogo
    */
-  delete: async (id: number): Promise<void> => {
-    await apiClient.delete(`${API_ENDPOINTS_CATALOGS.MAESTRO_CATALOGOS_DETALLE}/detalles/${id}`);
+  delete: async (id: number): Promise<ApiResponse<void>> => {
+    return await getUniversalBusinessApiClient().delete(
+      `${API_ENDPOINTS_CATALOGS.MAESTRO_CATALOGOS_DETALLE}/detalles/${id}`,
+    );
   },
 
   /**

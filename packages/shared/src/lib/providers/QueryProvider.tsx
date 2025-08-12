@@ -1,4 +1,4 @@
-// src/components/providers/QueryProvider.tsx
+// src/lib/providers/QueryProvider.tsx
 'use client';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -20,10 +20,28 @@ const createQueryClient = () =>
         gcTime: 10 * 60 * 1000, // 10 minutos (antes era cacheTime)
 
         // Reintentos automáticos en caso de error
-        retry:false,
+        retry: (failureCount, error: any) => {
+          // 🚫 No reintentar errores 4xx (errores del cliente y ya controlado)
+          if (error?.apiError?.statusCode >= 400 && error?.apiError?.statusCode < 500) {
+            return false;
+          }
+
+          // 🚫 No reintentar errores de CORS
+          if (error?.apiError?.type == 'cors') {
+            return false;
+          }
+
+          // ✅ Reintentar errores 5xx del servidor (máximo 2 intentos)
+          if (error?.apiError?.statusCode >= 500) {
+            return failureCount < 2;
+          }
+
+          // ✅ Reintentar otros errores de red transitorios
+          return failureCount < 2;
+        },
         // Configuración de refetch
-        refetchOnWindowFocus: false,
-        refetchOnReconnect: false,
+        refetchOnWindowFocus: process.env.NODE_ENV === 'production',
+        refetchOnReconnect: true,
         refetchOnMount: false,
 
         // Configuración de network

@@ -43,8 +43,6 @@ export default function CatalogoDetallePage() {
     delete: deleteDetalle,
     refetch,
     isDeleting,
-    // Funcionalidades específicas de catálogos
-    toggleStatus,
   } = useCatalogosDetalleSimple(catalogoId, true);
 
   // ✅ 2. UNIFIED HOOK: Table + Actions en uno solo
@@ -63,7 +61,6 @@ export default function CatalogoDetallePage() {
     data: items,
     loading: isLoading,
     onRefresh: refetch,
-    toggleStatus,
     deleteCatalogoDetalle: deleteDetalle,
     createCatalogoDetalle: create,
     updateCatalogoDetalle: update,

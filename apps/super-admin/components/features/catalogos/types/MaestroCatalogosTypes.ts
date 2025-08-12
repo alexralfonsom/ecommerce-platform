@@ -2,7 +2,7 @@
 // MAESTRO CATÁLOGOS
 // ===============================
 
-import { ApiResponse, PagedResult } from '@repo/shared/types/api';
+import { ApiResponse, PagedApiResponse, ListApiResponse } from '@repo/shared/types/api';
 
 export interface IMaestroCatalogo {
   id: number;
@@ -37,8 +37,8 @@ export interface MaestroCatalogosParameters {
 // ===============================
 
 export type MaestroCatalogoResponse = ApiResponse<IMaestroCatalogo>;
-export type MaestroCatalogosListResponse = ApiResponse<IMaestroCatalogo[]>;
-export type MaestroCatalogosPagedResponse = ApiResponse<PagedResult<IMaestroCatalogo>>;
+export type MaestroCatalogosListResponse = ListApiResponse<IMaestroCatalogo>;
+export type MaestroCatalogosPagedResponse = PagedApiResponse<IMaestroCatalogo>;
 
 // ===============================
 // CONSTANTES Y ENUMS
