@@ -9,7 +9,7 @@ import {
   buildLocalizedPath,
   getLanguageConfig,
   saveLocalePreference,
-} from '@repo/shared/lib/utils/i18nUtils';
+} from '@repo/shared/lib/utils';
 import Icon from '@components/ui/Icon';
 import { Button } from '@components/ui/button';
 import {

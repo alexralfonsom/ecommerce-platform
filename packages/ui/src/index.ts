@@ -60,13 +60,8 @@ export { PagesHeader, type PagesHeaderProps, type HeaderAction } from './compone
 // ===============================
 // 🌐 PROVIDERS
 // ===============================
-export {
-  QueryProvider,
-  createEntityQueryKeys,
-  EntityStaleTime,
-  queryKeys,
-  getEntityQueryOptions
-} from './components/providers/QueryProvider';
+// QueryProvider and query utilities are now in @repo/shared for better architecture
+export { QueryProvider, createEntityQueryKeys, EntityStaleTime, getEntityQueryOptions } from '@repo/shared';
 export { SessionWrapper } from './components/providers/SessionWrapper';
 export { ThemeProvider } from './components/providers/theme-provider';
 

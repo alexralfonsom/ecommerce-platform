@@ -15,7 +15,7 @@ import {
 
 import { NavigationItem } from '@repo/shared/types/navigation';
 import { usePathname } from 'next/navigation';
-import { getCurrentLocaleFromPath } from '@repo/shared/lib/utils/i18nUtils';
+import { getCurrentLocaleFromPath } from '@repo/shared/lib/utils';
 import Icon from '@components/ui/Icon';
 import Link from '@components/ui/Link';
 

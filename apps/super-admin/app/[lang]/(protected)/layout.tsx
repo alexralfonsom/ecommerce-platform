@@ -17,7 +17,7 @@ import {
   filterProjectsByRole,
   filterSecondaryNavByRole,
   filterUserMenuByRole,
-} from '@repo/shared/lib/utils/roleUtils';
+} from '@repo/shared/lib/utils';
 
 // Configuración de navegación principal
 const navigation: NavigationItem[] = mockNavigation;
