@@ -113,7 +113,7 @@ export * from './components/ui/tooltip';
 // 🎯 FORM COMPONENTS
 // ===============================
 // Note: Exporting from FormField module only to avoid conflicts with form.tsx
-export { FieldWrapper, FormFieldWrapper, CheckboxField, LabelField } from './components/ui/FormField';
+export { FormFieldWrapper, LabelField } from '@components/ui/FormField';
 
 // ===============================
 // 📊 DATA COMPONENTS

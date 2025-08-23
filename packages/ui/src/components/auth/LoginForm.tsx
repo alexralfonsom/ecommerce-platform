@@ -8,7 +8,7 @@ import { Locale } from '@repo/shared/configs/i18n';
 import Link from '@components/ui/Link';
 import { Button } from '@components/ui/button';
 import { Input } from '@components/ui/input';
-import { Form, FormField } from '@components/ui/form';
+import { Form } from '@components/ui/form';
 import { FormFieldWrapper } from '@components/ui/FormField/FormFieldWrapper';
 import SocialLogin from '@components/auth/SocialLogin';
 import { SignInFormData, signInSchema } from '@components/auth/schemas/authSchema';
@@ -54,45 +54,40 @@ export default function LoginForm({ locale, callbackUrl, authMode }: LoginFormPr
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             {/* Campo Username */}
-            <FormField
-              control={form.control}
+            <FormFieldWrapper
               name="username"
+              control={form.control}
+              label={tAuth('login.username')}
               render={({ field }) => (
-                <FormFieldWrapper label={tAuth('login.username')} required>
-                  <Input
-                    type="text"
-                    placeholder={tAuth('login.usernamePlaceHolder')}
-                    className="px-3 py-2"
-                    {...field}
-                  />
-                </FormFieldWrapper>
+                <Input
+                  type="text"
+                  placeholder={tAuth('login.usernamePlaceHolder')}
+                  className="px-3 py-2"
+                  {...field}
+                />
               )}
             />
 
             {/* Campo Password */}
-            <FormField
-              control={form.control}
+            <FormFieldWrapper
               name="password"
-              render={({ field }) => (
-                <FormFieldWrapper
-                  label={tAuth('login.password')}
-                  required
-                  labelSuffix={
-                    <Link
-                      href={`/${locale}/auth/forgot-password`}
-                      className="text-sm underline-offset-2 hover:underline"
-                    >
-                      {tAuth('login.forgotPassword')}
-                    </Link>
-                  }
+              control={form.control}
+              label={tAuth('login.password')}
+              labelSuffix={
+                <Link
+                  href={`/${locale}/auth/forgot-password`}
+                  className="text-sm underline-offset-2 hover:underline"
                 >
-                  <Input
-                    type="password"
-                    placeholder={tAuth('login.passwordPlaceHolder')}
-                    className="px-3 py-2"
-                    {...field}
-                  />
-                </FormFieldWrapper>
+                  {tAuth('login.forgotPassword')}
+                </Link>
+              }
+              render={({ field }) => (
+                <Input
+                  type="password"
+                  placeholder={tAuth('login.passwordPlaceHolder')}
+                  className="px-3 py-2"
+                  {...field}
+                />
               )}
             />
 

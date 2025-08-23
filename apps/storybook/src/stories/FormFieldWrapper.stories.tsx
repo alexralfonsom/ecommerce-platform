@@ -2,14 +2,7 @@ import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from "zod";
-import { Form } from '@repo/ui';
-import { FormField } from '@repo/ui';
-import { FormFieldWrapper } from '@repo/ui';
-import { Input } from '@repo/ui';
-import { Textarea } from '@repo/ui';
-import { Button } from '@repo/ui';
-import { Link } from '@repo/ui';
-import { Icon } from '@repo/ui';
+import { Form, FormFieldWrapper, Input, Textarea, Button, Checkbox, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@repo/ui';
 import React from 'react';
 
 const meta: Meta<typeof FormFieldWrapper> = {
@@ -20,13 +13,28 @@ const meta: Meta<typeof FormFieldWrapper> = {
     docs: {
       description: {
         component: `
-FormFieldWrapper es un componente reutilizable que combina lo mejor de shadcn/ui forms con UX mejorada:
+## FormFieldWrapper - Componente unificado para formularios
 
-- ✅ Asterisco automático para campos requeridos
-- ✅ Icono de error automático con AlertCircle
-- ✅ Help text inteligente que se oculta cuando hay errores
-- ✅ Label suffix para elementos adicionales
-- ✅ Accesibilidad completa heredada de shadcn/ui
+Wrapper completo para React Hook Form que proporciona:
+
+- ✅ **Integración nativa** con React Hook Form
+- ✅ **Type-safe** con TypeScript generics
+- ✅ **Errores automáticos** del form state
+- ✅ **Required automático** basado en schema Zod
+- ✅ **Cualquier control HTML5** - Input, Textarea, Select, Checkbox, etc.
+- ✅ **Help text inteligente** que se oculta cuando hay errores
+- ✅ **Label suffix** para elementos adicionales
+- ✅ **Accesibilidad completa** heredada de shadcn/ui
+
+### Patrón único para toda la aplicación:
+\`\`\`tsx
+<FormFieldWrapper
+  name="fieldName"
+  control={control}
+  label="Field Label" 
+  render={({ field }) => <Input {...field} />}
+/>
+\`\`\`
         `,
       },
     },
@@ -37,195 +45,237 @@ FormFieldWrapper es un componente reutilizable que combina lo mejor de shadcn/ui
 export default meta;
 type Story = StoryObj<typeof FormFieldWrapper>;
 
-// Schema para ejemplos básicos
-const basicSchema = z.object({
-  username: z.string().min(3, 'Username debe tener al menos 3 caracteres'),
-  email: z.string().email('Email inválido'),
-  password: z.string().min(8, 'Contraseña debe tener al menos 8 caracteres'),
-  bio: z.string().max(160, 'Bio no puede exceder 160 caracteres').optional(),
-  website: z.string().url('URL inválida').optional().or(z.literal('')),
-});
+// ================================
+// COMPONENTE WRAPPER PARA STORIES
+// ================================
 
-// Componente wrapper para Storybook
-function FormStoryWrapper({
-  children,
-  schema = basicSchema,
-}: {
-  children: React.ReactNode;
-  schema?: any;
+function StoryWrapper({ 
+  children, 
+  schema 
+}: { 
+  children: (form: any) => React.ReactNode; 
+  schema: any;
 }) {
   const form = useForm({
     resolver: zodResolver(schema),
-    defaultValues: {
-      username: '',
-      email: '',
-      password: '',
-      bio: '',
-      website: '',
-    },
+    defaultValues: {},
   });
 
   return (
     <div className="mx-auto max-w-md">
       <Form {...form}>
         <form className="space-y-4">
-          {children}
-          <Button type="submit" className="w-full">
-            Enviar
-          </Button>
+          {children(form)}
         </form>
       </Form>
     </div>
   );
 }
 
-export const BasicRequired: Story = {
-  render: () => (
-    <FormStoryWrapper>
-      <FormField
-        name="username"
-        render={({ field }) => (
-          <FormFieldWrapper label="Nombre de usuario" required>
-            <Input placeholder="juanperez123" {...field} />
-          </FormFieldWrapper>
+// ================================
+// STORIES - CASOS DE USO
+// ================================
+
+export const BasicInput: Story = {
+  render: () => {
+    const schema = z.object({
+      name: z.string().min(2, 'Nombre debe tener al menos 2 caracteres'),
+    });
+
+    return (
+      <StoryWrapper schema={schema}>
+        {(form) => (
+          <FormFieldWrapper
+            name="name"
+            control={form.control}
+            label="Nombre completo"
+            render={({ field }) => (
+              <Input {...field} placeholder="Juan Pérez" />
+            )}
+          />
         )}
-      />
-    </FormStoryWrapper>
-  ),
+      </StoryWrapper>
+    );
+  },
 };
 
 export const WithDescription: Story = {
-  render: () => (
-    <FormStoryWrapper>
-      <FormField
-        name="email"
-        render={({ field }) => (
+  render: () => {
+    const schema = z.object({
+      email: z.string().email('Email inválido'),
+    });
+
+    return (
+      <StoryWrapper schema={schema}>
+        {(form) => (
           <FormFieldWrapper
+            name="email"
+            control={form.control}
             label="Correo electrónico"
-            required
             description="Usaremos este email para contactarte"
-          >
-            <Input type="email" placeholder="juan@ejemplo.com" {...field} />
-          </FormFieldWrapper>
+            render={({ field }) => (
+              <Input {...field} type="email" placeholder="juan@ejemplo.com" />
+            )}
+          />
         )}
-      />
-    </FormStoryWrapper>
-  ),
+      </StoryWrapper>
+    );
+  },
 };
 
 export const WithHelpText: Story = {
-  render: () => (
-    <FormStoryWrapper>
-      <FormField
-        name="password"
-        render={({ field }) => (
+  render: () => {
+    const schema = z.object({
+      password: z.string().min(8, 'Contraseña debe tener al menos 8 caracteres'),
+    });
+
+    return (
+      <StoryWrapper schema={schema}>
+        {(form) => (
           <FormFieldWrapper
+            name="password"
+            control={form.control}
             label="Contraseña"
-            required
             helpText="Mínimo 8 caracteres, incluye números y símbolos"
-          >
-            <Input type="password" placeholder="********" {...field} />
-          </FormFieldWrapper>
+            render={({ field }) => (
+              <Input {...field} type="password" placeholder="********" />
+            )}
+          />
         )}
-      />
-    </FormStoryWrapper>
-  ),
+      </StoryWrapper>
+    );
+  },
 };
 
 export const WithLabelSuffix: Story = {
-  render: () => (
-    <FormStoryWrapper>
-      <FormField
-        name="password"
-        render={({ field }) => (
+  render: () => {
+    const schema = z.object({
+      password: z.string().min(1, 'Contraseña requerida'),
+    });
+
+    return (
+      <StoryWrapper schema={schema}>
+        {(form) => (
           <FormFieldWrapper
+            name="password"
+            control={form.control}
             label="Contraseña"
-            required
             labelSuffix={
-              <Link href="/forgot" className="text-xs underline">
+              <button type="button" className="text-xs underline text-blue-600">
                 ¿Olvidaste tu contraseña?
-              </Link>
+              </button>
             }
-          >
-            <Input type="password" placeholder="********" {...field} />
-          </FormFieldWrapper>
+            render={({ field }) => (
+              <Input {...field} type="password" placeholder="********" />
+            )}
+          />
         )}
-      />
-    </FormStoryWrapper>
-  ),
+      </StoryWrapper>
+    );
+  },
 };
 
-export const WithCharacterCounter: Story = {
-  render: () => (
-    <FormStoryWrapper>
-      <FormField
-        name="bio"
-        render={({ field }) => (
+export const TextAreaExample: Story = {
+  render: () => {
+    const schema = z.object({
+      message: z.string().min(10, 'Mensaje debe tener al menos 10 caracteres').max(500, 'Máximo 500 caracteres'),
+    });
+
+    return (
+      <StoryWrapper schema={schema}>
+        {(form) => (
           <FormFieldWrapper
-            label="Biografía"
+            name="message"
+            control={form.control}
+            label="Mensaje"
+            description="Cuéntanos en qué podemos ayudarte"
             labelSuffix={
-              <span className="text-muted-foreground text-xs">{field.value?.length || 0}/160</span>
+              <span className="text-xs text-gray-500">
+                {form.watch('message')?.length || 0}/500
+              </span>
             }
-            description="Cuéntanos un poco sobre ti"
-          >
-            <Textarea
-              placeholder="Me gusta la programación y el café..."
-              maxLength={160}
-              {...field}
-            />
-          </FormFieldWrapper>
+            render={({ field }) => (
+              <Textarea {...field} placeholder="Escribe tu mensaje aquí..." rows={4} />
+            )}
+          />
         )}
-      />
-    </FormStoryWrapper>
-  ),
+      </StoryWrapper>
+    );
+  },
 };
 
-export const WithIconInSuffix: Story = {
-  render: () => (
-    <FormStoryWrapper>
-      <FormField
-        name="website"
-        render={({ field }) => (
+export const CheckboxExample: Story = {
+  render: () => {
+    const schema = z.object({
+      terms: z.boolean().refine(val => val === true, 'Debes aceptar los términos'),
+    });
+
+    return (
+      <StoryWrapper schema={schema}>
+        {(form) => (
           <FormFieldWrapper
-            label="Sitio web"
-            labelSuffix={<Icon name="ExternalLink" className="text-muted-foreground h-4 w-4" />}
-            helpText="Tu página personal o portafolio"
-          >
-            <Input type="url" placeholder="https://tuwebsite.com" {...field} />
-          </FormFieldWrapper>
+            name="terms"
+            control={form.control}
+            label="Términos y condiciones"
+            description="Lee y acepta nuestros términos de servicio"
+            render={({ field }) => (
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+                <span className="text-sm">Acepto los términos y condiciones</span>
+              </div>
+            )}
+          />
         )}
-      />
-    </FormStoryWrapper>
-  ),
+      </StoryWrapper>
+    );
+  },
 };
 
-export const OptionalField: Story = {
-  render: () => (
-    <FormStoryWrapper>
-      <FormField
-        name="website"
-        render={({ field }) => (
+export const SelectExample: Story = {
+  render: () => {
+    const schema = z.object({
+      role: z.string().min(1, 'Debe seleccionar un rol'),
+    });
+
+    return (
+      <StoryWrapper schema={schema}>
+        {(form) => (
           <FormFieldWrapper
-            label="Teléfono"
-            helpText="Opcional - Solo si prefieres que te llamemos"
-          >
-            <Input type="tel" placeholder="+1 (555) 123-4567" {...field} />
-          </FormFieldWrapper>
+            name="role"
+            control={form.control}
+            label="Rol"
+            helpText="Selecciona tu rol en la empresa"
+            render={({ field }) => (
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecciona un rol" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="developer">Desarrollador</SelectItem>
+                  <SelectItem value="designer">Diseñador</SelectItem>
+                  <SelectItem value="manager">Gerente</SelectItem>
+                  <SelectItem value="admin">Administrador</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
+          />
         )}
-      />
-    </FormStoryWrapper>
-  ),
+      </StoryWrapper>
+    );
+  },
 };
-
-// Schema para demostrar errores
-const errorSchema = z.object({
-  username: z.string().min(10, 'Username debe tener al menos 10 caracteres'),
-});
 
 export const WithValidationError: Story = {
   render: () => {
+    const schema = z.object({
+      username: z.string().min(10, 'Usuario debe tener al menos 10 caracteres'),
+    });
+
     const form = useForm({
-      resolver: zodResolver(errorSchema),
+      resolver: zodResolver(schema),
       defaultValues: { username: 'abc' }, // Valor que causará error
     });
 
@@ -238,17 +288,13 @@ export const WithValidationError: Story = {
       <div className="mx-auto max-w-md">
         <Form {...form}>
           <form className="space-y-4">
-            <FormField
-              control={form.control}
+            <FormFieldWrapper
               name="username"
+              control={form.control}
+              label="Nombre de usuario"
+              helpText="Este texto se oculta cuando hay error"
               render={({ field }) => (
-                <FormFieldWrapper
-                  label="Nombre de usuario"
-                  required
-                  helpText="Este texto se oculta cuando hay error"
-                >
-                  <Input placeholder="Escribe algo corto para ver el error" {...field} />
-                </FormFieldWrapper>
+                <Input {...field} placeholder="Escribe algo corto para ver el error" />
               )}
             />
           </form>
@@ -258,104 +304,109 @@ export const WithValidationError: Story = {
   },
 };
 
-// Formulario completo de ejemplo
-const contactSchema = z.object({
-  name: z.string().min(2, 'Nombre debe tener al menos 2 caracteres'),
-  email: z.string().email('Email inválido'),
-  phone: z.string().optional(),
-  subject: z.string().min(5, 'Asunto debe tener al menos 5 caracteres'),
-  message: z.string().min(10, 'Mensaje debe tener al menos 10 caracteres'),
-});
+// ================================
+// FORMULARIO COMPLETO DE EJEMPLO
+// ================================
 
-export const ContactFormExample: Story = {
+export const CompleteFormExample: Story = {
   render: () => {
-    const form = useForm({
-      resolver: zodResolver(contactSchema),
-      defaultValues: {
-        name: '',
-        email: '',
-        phone: '',
-        subject: '',
-        message: '',
-      },
+    const schema = z.object({
+      name: z.string().min(2, 'Nombre debe tener al menos 2 caracteres'),
+      email: z.string().email('Email inválido'),
+      phone: z.string().optional(),
+      role: z.string().min(1, 'Debe seleccionar un rol'),
+      bio: z.string().max(200, 'Biografía no puede exceder 200 caracteres').optional(),
+      terms: z.boolean().refine(val => val === true, 'Debe aceptar los términos'),
     });
 
     return (
-      <div className="mx-auto max-w-md">
-        <h3 className="mb-4 text-lg font-semibold">Formulario de Contacto</h3>
-        <Form {...form}>
-          <form className="space-y-4">
-            <FormField
-              control={form.control}
+      <StoryWrapper schema={schema}>
+        {(form) => (
+          <>
+            <h3 className="text-lg font-semibold mb-4">Registro de Usuario</h3>
+            
+            <FormFieldWrapper
               name="name"
+              control={form.control}
+              label="Nombre completo"
               render={({ field }) => (
-                <FormFieldWrapper
-                  label="Nombre completo"
-                  required
-                  helpText="Ingresa tu nombre y apellido"
-                >
-                  <Input placeholder="Juan Pérez" {...field} />
-                </FormFieldWrapper>
+                <Input {...field} placeholder="Juan Pérez" />
               )}
             />
 
-            <FormField
-              control={form.control}
+            <FormFieldWrapper
               name="email"
+              control={form.control}
+              label="Correo electrónico"
+              description="Usaremos este email para contactarte"
               render={({ field }) => (
-                <FormFieldWrapper
-                  label="Correo electrónico"
-                  required
-                  description="Usaremos este email para responderte"
-                >
-                  <Input type="email" placeholder="juan@ejemplo.com" {...field} />
-                </FormFieldWrapper>
+                <Input {...field} type="email" placeholder="juan@ejemplo.com" />
               )}
             />
 
-            <FormField
-              control={form.control}
+            <FormFieldWrapper
               name="phone"
+              control={form.control}
+              label="Teléfono"
+              helpText="Opcional - Solo si prefieres que te llamemos"
               render={({ field }) => (
-                <FormFieldWrapper
-                  label="Teléfono"
-                  helpText="Opcional - Solo si prefieres que te llamemos"
-                >
-                  <Input type="tel" placeholder="+1 (555) 123-4567" {...field} />
-                </FormFieldWrapper>
+                <Input {...field} type="tel" placeholder="+1 (555) 123-4567" />
               )}
             />
 
-            <FormField
+            <FormFieldWrapper
+              name="role"
               control={form.control}
-              name="subject"
+              label="Rol"
               render={({ field }) => (
-                <FormFieldWrapper label="Asunto" required>
-                  <Input placeholder="¿En qué podemos ayudarte?" {...field} />
-                </FormFieldWrapper>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecciona un rol" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="developer">Desarrollador</SelectItem>
+                    <SelectItem value="designer">Diseñador</SelectItem>
+                    <SelectItem value="manager">Gerente</SelectItem>
+                  </SelectContent>
+                </Select>
               )}
             />
 
-            <FormField
+            <FormFieldWrapper
+              name="bio"
               control={form.control}
-              name="message"
+              label="Biografía"
+              labelSuffix={
+                <span className="text-xs text-gray-500">
+                  {form.watch('bio')?.length || 0}/200
+                </span>
+              }
               render={({ field }) => (
-                <FormFieldWrapper
-                  label="Mensaje"
-                  required
-                  description="Cuéntanos en qué podemos ayudarte"
-                >
-                  <Textarea placeholder="Escribe tu mensaje aquí..." rows={4} {...field} />
-                </FormFieldWrapper>
+                <Textarea {...field} placeholder="Cuéntanos sobre ti..." rows={3} />
+              )}
+            />
+
+            <FormFieldWrapper
+              name="terms"
+              control={form.control}
+              label="Términos y condiciones"
+              render={({ field }) => (
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                  <span className="text-sm">Acepto los términos y condiciones</span>
+                </div>
               )}
             />
 
             <Button type="submit" className="w-full">
-              Enviar mensaje
+              Crear cuenta
             </Button>
-          </form>
-        </Form>
-      </div>
+          </>
+        )}
+      </StoryWrapper>
     );
   },
 };

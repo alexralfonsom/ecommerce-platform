@@ -7,23 +7,27 @@ import Icon from '@components/ui/Icon';
 import {
   FormControl,
   FormDescription,
+  FormField,
   FormItem,
   FormLabel,
   FormMessage,
   useFormField,
 } from '@components/ui/form';
+import { Control, FieldPath, FieldValues } from 'react-hook-form';
 
-interface FormFieldWrapperProps {
+interface FormFieldWrapperProps<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> {
+  name: TName;
+  control: Control<TFieldValues>;
   label: string;
-  required?: boolean;
   description?: string;
   helpText?: string;
-  disabled?: boolean;
   className?: string;
-  children: React.ReactNode;
   labelClassName?: string;
-  // Para elementos que van junto al label (como "Forgot Password")
   labelSuffix?: React.ReactNode;
+  render: ({ field }: { field: any }) => React.ReactElement;
 }
 
 // Componente interno para el mensaje de error con icono
@@ -40,45 +44,49 @@ function FormErrorMessage() {
   );
 }
 
-export function FormFieldWrapper({
+export function FormFieldWrapper<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+>({
+  name,
+  control,
   label,
-  required = false,
   description,
   helpText,
-  disabled = false,
   className,
-  children,
   labelClassName,
   labelSuffix,
-}: FormFieldWrapperProps) {
+  render,
+}: FormFieldWrapperProps<TFieldValues, TName>) {
   return (
-    <FormItem className={cn('space-y-1', className)}>
-      <div className="flex items-center justify-between">
-        <FormLabel
-          className={cn(
-            'text-sm font-medium leading-4',
-            disabled && 'cursor-not-allowed opacity-50',
-            labelClassName,
+    <FormField
+      control={control}
+      name={name}
+      render={({ field, fieldState }) => (
+        <FormItem className={cn('space-y-1', className)}>
+          <div className="flex items-center justify-between">
+            <FormLabel className={cn('text-sm font-medium leading-4', labelClassName)}>
+              {label}
+            </FormLabel>
+            {labelSuffix && <div>{labelSuffix}</div>}
+          </div>
+
+          {description && (
+            <FormDescription className="text-muted-foreground text-xs">{description}</FormDescription>
           )}
-        >
-          {label}
-          {required && <span className="text-destructive ml-1">*</span>}
-        </FormLabel>
-        {labelSuffix && <div>{labelSuffix}</div>}
-      </div>
 
-      {/* Descripción general - NO interfiere con la validación */}
-      {description && (
-        <FormDescription className="text-muted-foreground text-xs">{description}</FormDescription>
+          <FormControl>
+            {render({ field })}
+          </FormControl>
+
+          {/* Help text solo se muestra cuando NO hay error */}
+          {helpText && !fieldState.error && (
+            <div className="text-xs text-blue-600">{helpText}</div>
+          )}
+
+          <FormErrorMessage />
+        </FormItem>
       )}
-
-      <FormControl>{children}</FormControl>
-
-      {/* Help text personalizado - Se muestra solo cuando NO hay error */}
-      {helpText && <div className="text-xs text-blue-600 empty:hidden">{helpText}</div>}
-
-      {/* Error message con icono automático - Solo aparece cuando hay error */}
-      <FormErrorMessage />
-    </FormItem>
+    />
   );
 }
