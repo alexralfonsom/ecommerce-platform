@@ -37,7 +37,7 @@ export function NavMain({ items }: NavigationMenuProps) {
 
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Admin</SidebarGroupLabel>
+      <SidebarGroupLabel>Main menu</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
           <Collapsible key={item.name} asChild defaultOpen={item.current}>

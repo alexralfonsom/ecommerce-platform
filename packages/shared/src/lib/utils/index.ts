@@ -33,3 +33,10 @@ export {
 } from './roleUtils';
 export { ExportUtils } from './exportUtils';
 export { buildQueryString, buildUrlWithParams, appendQueryParams } from './queryParams';
+export { 
+  buildRouteConfigFromMenu, 
+  consolidateRouteConfigs, 
+  routeConfigUtils,
+  type SuperRouteConfig,
+  type DynamicRouteConfig 
+} from './routeConfigBuilder';

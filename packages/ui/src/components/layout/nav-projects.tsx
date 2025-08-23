@@ -30,7 +30,7 @@ export function NavProjects({ items }: ProjectsProps) {
     items &&
     items.length > 0 && (
       <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-        <SidebarGroupLabel>Projects</SidebarGroupLabel>
+        <SidebarGroupLabel>Admin Options</SidebarGroupLabel>
         <SidebarMenu>
           {items.map((item) => (
             <SidebarMenuItem key={item.name}>

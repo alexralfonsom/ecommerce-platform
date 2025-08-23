@@ -8,10 +8,7 @@ import { DashboardLayout } from '@repo/ui';
 import type { ExtendedSession } from '@repo/shared/types/auth';
 import { NavigationItem } from '@repo/shared/types/navigation';
 import { generalIconsSVG } from '@repo/ui/configs/DesignSystem';
-import { mockNavigation } from '@repo/shared/data/mocks';
-import { MockProjectItems } from '@repo/shared/data/mocks';
-import { MockNavSecondary } from '@repo/shared/data/mocks';
-import { mockUserOptions } from '@repo/shared/data/mocks';
+import { useMenuNavigationItems } from '@repo/shared/lib/hooks';
 import {
   filterNavigationByRole,
   filterProjectsByRole,
@@ -19,17 +16,48 @@ import {
   filterUserMenuByRole,
 } from '@repo/shared/lib/utils';
 
-// Configuración de navegación principal
-const navigation: NavigationItem[] = mockNavigation;
-
-// Configuración del menú de usuario
-const userNavigation = mockUserOptions;
-const mckProjects = MockProjectItems;
-const mckNavSecondary = MockNavSecondary;
-
 export default function ProtectedLayout({ children }: { children: React.ReactNode }) {
   const { data: session } = useSession() as { data: ExtendedSession | null };
   useAuthToken();
+  
+  // 🔄 Cargar menús dinámicamente desde la API con fallback a mocks (PARALELO)
+  const dynamicNavigation = useMenuNavigationItems({
+    menuTypeCode: 'MAIN_MENU',
+    fallbackToMocks: true,
+    enableCache: true,
+    staleTime: 5 * 60 * 1000, // 5 minutos
+  });
+
+  // 🔄 Cargar menú secundario dinámicamente (PARALELO con el anterior)
+  const dynamicNavSecondary = useMenuNavigationItems({
+    menuTypeCode: 'SECONDARY_MENU',
+    fallbackToMocks: true,
+    enableCache: true,
+    staleTime: 5 * 60 * 1000, // 5 minutos
+  });
+
+  // 🔄 Cargar menú de proyectos/administrativo dinámicamente (PARALELO con los anteriores)
+  const dynamicProjects = useMenuNavigationItems({
+    menuTypeCode: 'MENU_GLOBAL_ADMINISTRATIVE',
+    fallbackToMocks: true,
+    enableCache: true,
+    staleTime: 5 * 60 * 1000, // 5 minutos
+  });
+
+  // 🔄 Cargar menú de usuario dinámicamente (PARALELO con todos los anteriores)
+  const dynamicUserNavigation = useMenuNavigationItems({
+    menuTypeCode: 'USER_MENU',
+    fallbackToMocks: true,
+    enableCache: true,
+    staleTime: 5 * 60 * 1000, // 5 minutos
+  });
+
+  // Configuración de navegación - ahora TODOS son dinámicos 🎉
+  const navigation: NavigationItem[] = dynamicNavigation;
+  const mckNavSecondary: NavigationItem[] = dynamicNavSecondary;
+  const mckProjects: NavigationItem[] = dynamicProjects;
+  const userNavigation: NavigationItem[] = dynamicUserNavigation;
+
   // Mapear datos de Auth0 a tipos NextAuth
   const user = session?.user
     ? {

@@ -1,5 +1,5 @@
-import {NavigationItem, Team} from "@/types/navigation";
-import {INotification} from "@/types/INotification";
+import { NavigationItem } from '@/types/navigation';
+import { INotification } from '@/types/INotification';
 
 export const mockNavigation: NavigationItem[] = [
   {
@@ -88,30 +88,5 @@ export const mockNotifications: INotification[] = [
     type: 'info',
     timestamp: new Date(Date.now() - 1800000), // 30 minutes ago
     read: true,
-  },
-];
-
-export const mockTeams: Team[] = [
-  {
-    id: 1,
-    name: 'Desarrollo',
-    href: '/teams/desarrollo',
-    initial: 'D',
-    current: false,
-  },
-  {
-    id: 2,
-    name: 'Producción',
-    href: '/teams/produccion',
-    initial: 'P',
-    current: false,
-    badge: '3',
-  },
-  {
-    id: 3,
-    name: 'Testing',
-    href: '/teams/testing',
-    initial: 'T',
-    current: false,
   },
 ];
