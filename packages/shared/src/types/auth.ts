@@ -31,6 +31,10 @@ export interface ExtendedUser extends BaseUser, AuthTokens, ProviderInfo {
   tenantId?: string;
   permissions?: string[];
   
+  // Nuevos campos requeridos para APIM
+  userId?: string; // ID del usuario (puede ser diferente del id)
+  platform_role?: string; // Rol de plataforma desde Auth0
+  
   // Roles de aplicación NO van en sesión (se cargan on-demand)
   // appRoles?: string[];
   // appPermissions?: string[];
@@ -67,6 +71,11 @@ export interface ExtendedJWT extends AuthTokens {
   tenantId?: string;
   organizationId?: string;
   permissions?: string[];
+  
+  // Nuevos campos requeridos para APIM
+  userId?: string; // ID del usuario para envío al API
+  platform_role?: string; // Rol de plataforma desde Auth0
+  email?: string; // Email para envío al API
   
   // Roles y permisos de aplicación (dinámicos)
   appRoles?: string[];

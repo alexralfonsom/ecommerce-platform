@@ -138,30 +138,72 @@ export const authOptions: NextAuthOptions = {
           });
 
         }
-        console.log(
-          `Token created - Expires at: ${new Date(token.expiresAt as number).toISOString()}`,
-        );
-        console.log(`Current time: ${new Date().toISOString()}`);
-        console.log(
-          `Time until expiry: ${((token.expiresAt as number) - Date.now()) / 1000 / 60} minutes`,
-        );
 
         // Extraer permisos del access_token para Auth0
         if (account?.access_token && account.provider === 'auth0') {
           const decodedToken = decodeJWT(account.access_token);
-          console.log('Decoded JWT:', decodedToken);
+          console.log('🔍 Decoded Access Token Full Payload:', JSON.stringify(decodedToken, null, 2));
+          
+          // También decodificar el ID token si está disponible para comparar
+          if (account.id_token) {
+            const decodedIdToken = decodeJWT(account.id_token);
+            console.log('🔍 Decoded ID Token Full Payload:', JSON.stringify(decodedIdToken, null, 2));
+          }
+          
+          // Información del profile también puede contener datos útiles
+          console.log('🔍 Profile Data:', JSON.stringify(profile, null, 2));
+          console.log('🔍 User Data from Provider:', JSON.stringify(user, null, 2));
+          
           if (decodedToken) {
             token.permissions = decodedToken['http://saas_startia.tech/permissions'] || [];
-            //token.role = decodedToken['http://saas_startia.tech/roles'] || [];
             
-            // Extraer solo tenantId desde claims personalizados o profile metadata
+            // Extraer platform_role desde claims personalizados de Auth0
+            // Manejar posible comilla extra en el claim
+            token.platform_role = decodedToken['http://saas_startia.tech/platform_role'] ||
+                                   'user_role_not_defined';
+            
+            // Extraer tenantId desde claims personalizados o profile metadata
             token.tenantId = decodedToken['http://saas_startia.tech/tenant_id'] ||
                             (profile as any)?.user_metadata?.tenant_id || 
                             'default_tenant';
+                            
+            // Extraer organization_id si está disponible
+            token.organizationId = decodedToken['http://saas_startia.tech/organization_id']?.toString() || null;
             
-            console.log('🔐 Extracted permissions from JWT:', token.permissions);
-            console.log('🏢 Tenant ID:', token.tenantId);
-            console.log('👤 Platform Role:', token.role);
+            // Extraer auth0Id (sub) - ID del proveedor de identidad
+            token.auth0Id = decodedToken.sub || user.id || 'unknown';
+            
+            // userId será el ID interno que se asignará después de la sincronización con DB
+            // Por ahora mantener el auth0Id como fallback
+            token.userId = token.auth0Id;
+            
+            // El email se obtiene una vez y se almacena en la sesión para evitar llamadas repetidas
+            token.email = user.email || // Del user object de NextAuth (más confiable)
+                         (profile as any)?.email || // Del profile de Auth0
+                         (account.id_token ? decodeJWT(account.id_token)?.email : null) || // Del ID token
+                         decodedToken.email || // Del access token (menos común)
+                         '';
+                         
+            // Obtener name también para evitar futuras llamadas
+            token.name = user.name || 
+                        (profile as any)?.name || 
+                        (profile as any)?.nickname ||
+                        token.email;
+            
+            console.log('🔐 Extracted Data Summary:');
+            console.log('  - Permissions:', token.permissions);
+            console.log('  - Tenant ID:', token.tenantId);
+            console.log('  - Organization ID:', token.organizationId);
+            console.log('  - Platform Role:', token.platform_role);
+            console.log('  - User ID (sub):', token.userId);
+            console.log('  - Email Sources Check:');
+            console.log('    - user.email:', user.email);
+            console.log('    - decodedToken.email:', decodedToken.email);
+            console.log('    - profile.email:', (profile as any)?.email);
+            console.log('    - ID token email:', account.id_token ? decodeJWT(account.id_token)?.email : 'No ID token');
+            console.log('    - Final email:', token.email);
+            console.log('  - Available Access Token Claims:', Object.keys(decodedToken));
+            console.log('  - Available Profile Keys:', profile ? Object.keys(profile) : 'No profile');
 
           }
         }
@@ -190,21 +232,37 @@ export const authOptions: NextAuthOptions = {
             token.appPermissions = [];
           }
         }
-        // Sincronizar usuario con tu base de datos .NET Core
-        // const syncResult = await syncUserWithDotNetAPI({
-        //   auth0Id: user.id!,
-        //   email: user.email!,
-        //   name: user.name!,
-        //   picture: user.image,
-        //   provider: account.provider,
-        //   organizationId: profile?.org_id,
-        //   roles: profile?.['https://yourapp.com/roles'] || ['user'],
-        //   accessToken: account.access_token!,
-        // });
 
-        // Añadir ID interno de tu sistema
-        // token.internalUserId = syncResult?.internalUserId;
-        // token.isNewUser = syncResult?.isNewUser;
+        // Sincronizar usuario con tu base de datos .NET Core (HABILITADO)
+        if (account.provider === 'auth0' && token.auth0Id && token.email) {
+          try {
+            const syncResult = await syncUserWithDotNetAPI({
+              auth0Id: token.auth0Id,
+              email: token.email,
+              name: user.name || token.email,
+              picture: user.image,
+              provider: account.provider,
+              organizationId: token.organizationId,
+              roles: [token.platform_role || 'user'],
+              accessToken: account.access_token!,
+            });
+
+            // Si la sincronización fue exitosa, actualizar el userId interno
+            if (syncResult?.internalUserId) {
+              token.userId = syncResult.internalUserId; // Reemplazar con el GUID interno
+              token.internalUserId = syncResult.internalUserId;
+              token.isNewUser = syncResult.isNewUser;
+              
+              console.log('✅ User synchronized with local DB:');
+              console.log('  - Internal User ID:', token.userId);
+              console.log('  - Auth0 ID:', token.auth0Id);
+              console.log('  - Is New User:', token.isNewUser);
+            }
+          } catch (error) {
+            console.error('❌ Error synchronizing user with local DB:', error);
+            // Mantener auth0Id como fallback si falla la sincronización
+          }
+        }
       }
 
       // Verificar si el token necesita renovación (token.expiresAt ya está en milisegundos)
@@ -232,6 +290,11 @@ export const authOptions: NextAuthOptions = {
         user.id = token.id || user.id || '';
         user.provider = token.provider;
         user.tenantId = token.tenantId as string;
+        
+        // Campos requeridos para APIM
+        user.userId = token.userId as string;
+        user.platform_role = token.platform_role as string;
+        user.email = user.email || token.email;
         
         // Auth0 ya envía los permisos correctos, los usamos directamente  
         user.permissions = token.permissions as string[] || [];

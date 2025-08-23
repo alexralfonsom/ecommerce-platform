@@ -1,5 +1,5 @@
 // src/lib/schemas/catalogoSchema.ts
-import { z } from 'zod/v4';
+import * as z from "zod";
 
 // ===============================
 // 🎯 SCHEMAS BASE PARA CATÁLOGOS
