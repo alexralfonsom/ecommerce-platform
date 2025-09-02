@@ -52,7 +52,7 @@ export function DataTableToolbar<TData>({
               placeholder={tht('placeHolderSearch', { searchColumn: searchColumn })}
               value={(searchNameColumn?.getFilterValue() as string) ?? ''}
               onChange={(event) => searchNameColumn?.setFilterValue(event.target.value)}
-              className="col-start-1 row-start-1 w-[200px] pl-8 pr-4 sm:text-sm lg:w-[300px]"
+              className="col-start-1 row-start-1 w-[200px] pr-4 pl-8 sm:text-sm lg:w-[300px]"
               aria-label="Search"
             />
             <Icon

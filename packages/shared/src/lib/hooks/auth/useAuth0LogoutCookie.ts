@@ -13,13 +13,13 @@ export async function getAuth0LogoutCookie(): Promise<Auth0LogoutData | null> {
     // Server-side: no podemos acceder a document.cookie
     return null;
   }
-  
+
   // Client-side - usar document.cookie
   const cookies = document.cookie.split(';');
-  const cookie = cookies.find(c => c.trim().startsWith(`${COOKIE_NAME}=`));
-  
+  const cookie = cookies.find((c) => c.trim().startsWith(`${COOKIE_NAME}=`));
+
   if (!cookie) return null;
-  
+
   try {
     const encryptedData = cookie.split('=')[1];
     const decryptedData = atob(encryptedData);

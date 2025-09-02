@@ -12,7 +12,6 @@ const createRoutePatterns = (segments: readonly string[]) =>
 // const createRoutePatterns = (segments: readonly string[]) =>
 //   segments.map((segment) => new RegExp(`^\\/${segment}($|s*|\\/.*)`)); // Permite plural opcional
 
-
 export const APP_ROUTES = {
   defaultSection: DEFAULT_SECTION,
   patterns: {

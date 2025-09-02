@@ -6,8 +6,18 @@ import {
   useQueryClient,
   UseQueryOptions,
 } from '@tanstack/react-query';
-import { createEntityQueryKeys, EntityStaleTime, getEntityQueryOptions } from '@lib/providers/QueryProvider';
-import type { ApiResponse, PagedApiResponse, ListApiResponse, ApiError, ValidationError } from '@repo/shared/types/api';
+import {
+  createEntityQueryKeys,
+  EntityStaleTime,
+  getEntityQueryOptions,
+} from '@lib/providers/QueryProvider';
+import type {
+  ApiResponse,
+  PagedApiResponse,
+  ListApiResponse,
+  ApiError,
+  ValidationError,
+} from '@repo/shared/types/api';
 
 // ===============================
 // TIPOS BASE PARA PARÁMETROS CON PARENT SUPPORT
@@ -217,7 +227,7 @@ export function useGenericCRUD<
           if (Array.isArray(old.value)) {
             return { ...old, value: [newItem, ...old.value] };
           }
-          
+
           // Para PagedApiResponse, value es directamente el array
           if (old.value && old.metadata) {
             return {
@@ -310,11 +320,11 @@ export function useGenericCRUD<
 
           const updateItem = (item: any) => (item.id === id ? { ...item, ...data } : item);
 
-          // ✅ ACTUALIZADO: Manejar tanto arrays como PagedApiResponse con nueva estructura  
+          // ✅ ACTUALIZADO: Manejar tanto arrays como PagedApiResponse con nueva estructura
           if (Array.isArray(old.value)) {
             return { ...old, value: old.value.map(updateItem) };
           }
-          
+
           // Para PagedApiResponse, value es directamente el array
           if (old.value && old.metadata) {
             return {
@@ -379,7 +389,7 @@ export function useGenericCRUD<
           if (Array.isArray(old.value)) {
             return { ...old, value: old.value.filter((item: any) => item.id !== id) };
           }
-          
+
           // Para PagedApiResponse, value es directamente el array
           if (old.value && old.metadata) {
             return {

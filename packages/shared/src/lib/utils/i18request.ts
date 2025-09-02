@@ -3,13 +3,13 @@ import { headers, cookies } from 'next/headers';
 import { i18n, Locale } from '@configs/i18n';
 
 export default getRequestConfig(async () => {
-  let locale : string | null = null;
+  let locale: string | null = null;
 
   // ✅ Obtener el locale desde los headers del middleware
   const headersList = await headers();
   locale = headersList.get(i18n.cookies.localeCookieName) as Locale;
   if (!locale) {
-    const cookieStore = await cookies()
+    const cookieStore = await cookies();
     locale = cookieStore.get(i18n.cookies.localeCookieName)?.value || null;
   }
   if (!locale) {
@@ -18,9 +18,8 @@ export default getRequestConfig(async () => {
 
   // ✅ Validar que sea un locale válido
   const finalLocale = i18n.locales.includes(locale as Locale)
-    ? locale as Locale
+    ? (locale as Locale)
     : i18n.defaultLocale;
-
 
   try {
     // ✅ Cargar mensajes dinámicamente
@@ -42,7 +41,8 @@ export default getRequestConfig(async () => {
     console.error(`❌ Error loading messages for locale: ${finalLocale}`, error);
 
     // ✅ Fallback al idioma por defecto
-    const fallbackMessages = (await import(`@data/dictionaries/${i18n.defaultLocale}.json`)).default;
+    const fallbackMessages = (await import(`@data/dictionaries/${i18n.defaultLocale}.json`))
+      .default;
     return {
       locale: i18n.defaultLocale,
       messages: fallbackMessages,

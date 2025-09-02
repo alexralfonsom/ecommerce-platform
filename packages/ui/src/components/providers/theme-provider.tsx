@@ -7,9 +7,6 @@ interface ThemeProviderProps extends React.ComponentProps<typeof NextThemesProvi
   children: React.ReactNode;
 }
 
-export function ThemeProvider({
-  children,
-  ...props
-}: ThemeProviderProps) {
+export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
   return <NextThemesProvider {...props}>{children}</NextThemesProvider>;
 }

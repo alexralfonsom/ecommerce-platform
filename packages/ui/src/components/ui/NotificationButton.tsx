@@ -104,7 +104,7 @@ export default function NotificationButton({
           <Icon name="Bell" className="size-4" size={32} />
           {/* Badge */}
           {showBadge && unreadCount > 0 && (
-            <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs font-medium text-white">
+            <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs font-medium text-white">
               {unreadCount > 99 ? '99+' : unreadCount}
             </span>
           )}

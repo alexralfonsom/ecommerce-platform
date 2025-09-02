@@ -2,13 +2,13 @@ import Image from 'next/image';
 
 export default async function ErrroTest() {
   return (
-    <main className="min-h-full  isolate py-20 overflow-hidden">
+    <main className="isolate min-h-full overflow-hidden py-20">
       <Image
         src="/images/404/404background.jpeg"
         width={1920}
         height={1080}
         alt="Picture of the author"
-        className="absolute inset-0 -z-10 size-full object-cover object-bottom brightness-75 saturate-50 contrast-125"
+        className="absolute inset-0 -z-10 size-full object-cover object-bottom brightness-75 contrast-125 saturate-50"
       />
       <div className="mx-auto max-w-7xl px-6 py-32 text-center sm:py-40 lg:px-8">
         <p className="text-base/8 font-semibold text-white">404</p>

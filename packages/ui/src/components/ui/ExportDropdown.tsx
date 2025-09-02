@@ -45,7 +45,7 @@ export function ExportDropdown({
           variant="outline"
           size="sm"
           disabled={disabled || isExporting || (showSelectedOnly && selectedCount === 0)}
-          className="data-[state=open]:bg-accent group flex items-center gap-2"
+          className="group flex items-center gap-2 data-[state=open]:bg-accent"
         >
           {getButtonIcon()}
           {getButtonText()}

@@ -1,29 +1,28 @@
-// API barrel - cliente y endpoints principales  
-export { 
+// API barrel - cliente y endpoints principales
+export {
   // Universal clients (recomendado)
   getUniversalBusinessApiClient,
   getUniversalAdminApiClient,
-  
+
   // Server-only clients
   getBusinessApiClient,
   getAdminApiClient,
-  
+
   // Client-only clients
   getClientBusinessApiClient,
   getClientAdminApiClient,
-  
+
   // Factory functions
   createSecureApiClient,
-  
+
   // Error classes
-  AuthenticationError ,
+  AuthenticationError,
 
   // API Configs
   LOGICAL_API_CONFIG,
   getAllScopes,
   getScopesByDomain,
-  hasPermission
-
+  hasPermission,
 } from './client';
 
 export type { ApiClientConfig, RequestOptions } from './client';

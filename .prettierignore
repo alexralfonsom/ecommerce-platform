@@ -1,0 +1,21 @@
+# Ignorar dependencias
+node_modules
+**/dist
+**/build
+**/.next
+**/out
+**/.turbo
+
+# Ignorar compilados y builds
+.next
+build
+dist
+out
+
+# Ignorar locks
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Ignorar archivos de producción
+coverage

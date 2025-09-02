@@ -440,7 +440,6 @@ export function useCatalogos({
     onRowSelectionChange: memoizedData.length > 0 ? setRowSelection : undefined,
     onColumnVisibilityChange: memoizedData.length > 0 ? setColumnVisibility : undefined,
 
-
     // 🔧 CONFIGURACIÓN DE FUNCIONALIDADES
     enableRowSelection: true,
     enableMultiRowSelection: true,

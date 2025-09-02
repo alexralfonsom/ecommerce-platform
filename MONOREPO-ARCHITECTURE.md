@@ -16,15 +16,18 @@
 ## 🎯 Principios Fundamentales
 
 ### **Jerarquía de Dependencias**
+
 ```
 apps/super-admin ──→ packages/ui ──→ packages/shared
      ↑ Specific         ↑ Generic       ↑ Utils
 ```
 
 ### **Regla de Oro**
+
 > **Si se reutiliza entre apps → Shared. Si no se reutiliza → App específica.**
 
 ### **Contexto de Módulos**
+
 Cada paquete tiene su propio **sandbox de resolución**. Las variables CSS, tipos y dependencias solo están disponibles en su contexto específico.
 
 ---
@@ -84,6 +87,7 @@ ecommerce-platform/
 ### **🤔 ¿Dónde coloco mi código?**
 
 #### **1. ¿Es reutilizable entre apps?**
+
 ```typescript
 // ✅ Reutilizable → packages/shared/features/
 // Ejemplo: CatalogoForm usado en super-admin Y tenant-admin
@@ -93,6 +97,7 @@ ecommerce-platform/
 ```
 
 #### **2. ¿Tiene lógica de negocio?**
+
 ```typescript
 // ✅ Lógica de negocio → packages/shared/
 // Ejemplo: useCatalogos (gestiona estado de catálogos)
@@ -102,6 +107,7 @@ ecommerce-platform/
 ```
 
 #### **3. ¿Es específico de una app?**
+
 ```typescript
 // ✅ App-specific → apps/app-name/
 // Ejemplo: AdminLayout (diseño específico de super-admin)
@@ -112,17 +118,17 @@ ecommerce-platform/
 
 ### **📊 Matriz de Decisión**
 
-| Componente | UI | Shared | App | Razón |
-|------------|:--:|:------:|:---:|-------|
-| `Button` | ✅ | | | Primitivo sin lógica |
-| `DataTable<T>` | ✅ | | | Componente genérico reutilizable |
-| `CatalogoForm` | | ✅ | | **Solo si** se usa en múltiples apps |
-| `useCatalogos` | | ✅ | | **Solo si** se reutiliza el dominio |
-| `AdminLayout` | | | ✅ | Layout específico de super-admin |
-| `SuperAdminGuard` | | | ✅ | Permisos específicos de app |
-| `AdminNavigation` | | | ✅ | Navegación específica de app |
-| `ThemeProvider` | ✅ | | | Sistema de theming genérico |
-| `DesignSystem` | ✅ | | | **Migrado** de shared a UI |
+| Componente        | UI  | Shared | App | Razón                                |
+| ----------------- | :-: | :----: | :-: | ------------------------------------ |
+| `Button`          | ✅  |        |     | Primitivo sin lógica                 |
+| `DataTable<T>`    | ✅  |        |     | Componente genérico reutilizable     |
+| `CatalogoForm`    |     |   ✅   |     | **Solo si** se usa en múltiples apps |
+| `useCatalogos`    |     |   ✅   |     | **Solo si** se reutiliza el dominio  |
+| `AdminLayout`     |     |        | ✅  | Layout específico de super-admin     |
+| `SuperAdminGuard` |     |        | ✅  | Permisos específicos de app          |
+| `AdminNavigation` |     |        | ✅  | Navegación específica de app         |
+| `ThemeProvider`   | ✅  |        |     | Sistema de theming genérico          |
+| `DesignSystem`    | ✅  |        |     | **Migrado** de shared a UI           |
 
 ---
 
@@ -136,11 +142,11 @@ Cada paquete en el monorepo tiene su propio **sandbox de resolución de módulos
 // ❌ PROBLEMA: Cross-context CSS reference
 // packages/shared/configs/DesignSystem.ts
 export const danger = {
-  text: 'text-destructive-foreground' // ← Clase CSS sin variables
-}
+  text: 'text-destructive-foreground', // ← Clase CSS sin variables
+};
 
 // packages/ui/src/components/Toast.tsx
-import { danger } from '@repo/shared/configs/DesignSystem'
+import { danger } from '@repo/shared/configs/DesignSystem';
 // Las variables CSS están en UI, pero las clases vienen de SHARED
 // Resultado: Los estilos no se aplican correctamente
 ```
@@ -151,11 +157,11 @@ import { danger } from '@repo/shared/configs/DesignSystem'
 // ✅ SOLUCIÓN: Same-context reference
 // packages/ui/src/configs/DesignSystem.ts (MIGRADO AQUÍ)
 export const danger = {
-  text: 'text-destructive-foreground' // ← Mismo paquete que las variables
-}
+  text: 'text-destructive-foreground', // ← Mismo paquete que las variables
+};
 
 // packages/ui/src/components/Toast.tsx
-import { danger } from '../configs/DesignSystem' // ← Todo en el mismo contexto
+import { danger } from '../configs/DesignSystem'; // ← Todo en el mismo contexto
 ```
 
 ### **Por qué funcionó la migración:**
@@ -170,16 +176,18 @@ import { danger } from '../configs/DesignSystem' // ← Todo en el mismo context
 ## ⚠️ Desafíos de TurboRepo
 
 ### **1. Dependency Hell**
+
 ```json
 // ❌ Problema común: Versiones diferentes
 {
   "packages/ui": "react@19.1.1",
-  "packages/shared": "react@18.2.0",  // ← ¡Conflicto!
+  "packages/shared": "react@18.2.0", // ← ¡Conflicto!
   "apps/super-admin": "react@19.1.1"
 }
 ```
 
 **Solución:**
+
 ```json
 // ✅ Usar peerDependencies consistentes
 // packages/ui/package.json
@@ -192,18 +200,20 @@ import { danger } from '../configs/DesignSystem' // ← Todo en el mismo context
 ```
 
 ### **2. Circular Dependencies**
+
 ```typescript
 // ❌ MALO: Ciclo infinito
 // packages/ui/Button.tsx
-import { apiClient } from '@repo/shared'
+import { apiClient } from '@repo/shared';
 
-// packages/shared/apiClient.ts  
-import { Toast } from '@repo/ui' // ← ¡Ciclo infinito!
+// packages/shared/apiClient.ts
+import { Toast } from '@repo/ui'; // ← ¡Ciclo infinito!
 ```
 
 **Solución:** Respetar la jerarquía `apps → ui → shared`.
 
 ### **3. Build Dependencies**
+
 ```javascript
 // turbo.json - Configuración correcta
 {
@@ -217,13 +227,14 @@ import { Toast } from '@repo/ui' // ← ¡Ciclo infinito!
 ```
 
 ### **4. Type Resolution Issues**
+
 ```typescript
 // ❌ Los tipos pueden no propagarse
 // packages/ui/types.ts
-export type Theme = 'light' | 'dark'
+export type Theme = 'light' | 'dark';
 
 // apps/super-admin
-import { Theme } from '@repo/ui' // ← Falla si UI no está built
+import { Theme } from '@repo/ui'; // ← Falla si UI no está built
 ```
 
 **Solución:** Siempre ejecutar `pnpm build --filter=@repo/ui` antes del desarrollo.
@@ -238,24 +249,27 @@ import { Theme } from '@repo/ui' // ← Falla si UI no está built
 # 🐌 LENTO: Cambio en packages
 packages/ui/Button.tsx → build UI → restart all apps → 30s wait
 
-# ⚡ RÁPIDO: Cambio en apps  
+# ⚡ RÁPIDO: Cambio en apps
 apps/super-admin/page.tsx → hot reload instantáneo → <1s
 ```
 
 ### **Estrategia de Componentes**
 
 #### **✅ Debe ir en `packages/ui/`:**
+
 - **Primitivos:** Button, Input, Card, Modal, Toast
 - **Composables genéricos:** DataTable<T>, Form<T>, Layout
 - **Design System:** ThemeProvider, DesignSystem, animations
 
 #### **✅ Debe ir en `packages/shared/`:**
+
 - **Dominios reutilizables:** Solo si se usan en múltiples apps
 - **Hooks de negocio:** useCatalogos (si es compartido)
 - **API clients:** Si se reutilizan entre apps
 - **Types y schemas:** Interfaces compartidas
 
 #### **✅ Debe ir en `apps/app-name/`:**
+
 - **Lógica específica:** CatalogoForm (si solo se usa aquí)
 - **Componentes de página:** CatalogosPage, DashboardPage
 - **Layouts de app:** AdminLayout, TenantLayout
@@ -269,16 +283,16 @@ apps/super-admin/page.tsx → hot reload instantáneo → <1s
 export function createCRUDPage<T>(config: CRUDConfig<T>) {
   return function CRUDPage(props: CRUDPageProps<T>) {
     // Implementación genérica - cambios aquí rebuildan
-  }
+  };
 }
 
 // apps/super-admin/pages/CatalogosPage.tsx
 const CatalogosPage = createCRUDPage({
-  entityName: 'catalogos',        // ← Configuración aquí
-  api: catalogosApi,              // ← Hot reload rápido
+  entityName: 'catalogos', // ← Configuración aquí
+  api: catalogosApi, // ← Hot reload rápido
   columns: catalogoColumns,
-  permissions: adminPermissions
-})
+  permissions: adminPermissions,
+});
 ```
 
 ---
@@ -286,35 +300,42 @@ const CatalogosPage = createCRUDPage({
 ## 🛠️ Stack Tecnológico
 
 ### **Monorepo Management**
+
 - **TurboRepo** `^2.5.5` - Build orchestration y caching
 - **PNPM** `^10.13.1` - Package manager con workspaces
 - **Node.js** `v22.15.0` - Runtime environment
 
 ### **Frontend Framework**
+
 - **Next.js** `15.4.5` - React framework con App Router
 - **React** `^19.1.1` - UI library
 - **TypeScript** `^5.8.3` - Type safety
 
 ### **UI & Styling**
+
 - **Radix UI** - Primitivos accesibles y unstyled
 - **Tailwind CSS** `^4.1.11` - Utility-first CSS
 - **shadcn/ui** - Design system basado en Radix + Tailwind
 - **next-themes** `^0.4.6` - Dark/light mode support
 
 ### **State Management**
+
 - **TanStack Query** `^5.83.0` - Server state management
 - **React Hook Form** `^7.61.1` - Form state management
 - **Zod** `^4.0.13` - Schema validation
 
 ### **Authentication**
+
 - **NextAuth.js** `^4.24.11` - Authentication for Next.js
 - Soporte dual: Credentials + Azure AD
 
 ### **Internationalization**
+
 - **next-intl** `^4.3.4` - Internationalization para Next.js
 - Idiomas: Español (default), Inglés
 
 ### **Development Tools**
+
 - **ESLint** `^9.32.0` - Code linting
 - **Prettier** `^3.6.2` - Code formatting
 - **Storybook** `^9.0.18` - Component documentation
@@ -328,12 +349,12 @@ const CatalogosPage = createCRUDPage({
 ```typescript
 // ✅ Usar path aliases dentro de packages
 // packages/ui/src/components/Toast.tsx
-import { DesignSystem } from '@/configs/DesignSystem'
+import { DesignSystem } from '@/configs/DesignSystem';
 
 // ✅ Usar workspace imports entre packages
 // apps/super-admin/page.tsx
-import { Button } from '@repo/ui'
-import { useCatalogos } from '@repo/shared/features/catalogos'
+import { Button } from '@repo/ui';
+import { useCatalogos } from '@repo/shared/features/catalogos';
 ```
 
 ### **2. Package.json Exports**
@@ -356,13 +377,14 @@ import { useCatalogos } from '@repo/shared/features/catalogos'
 /* packages/ui/src/styles.css */
 :root {
   --destructive: oklch(0.58 0.22 27.29);
-  --destructive-foreground: oklch(1.00 0 0);
+  --destructive-foreground: oklch(1 0 0);
 }
 
 /* packages/ui/src/configs/DesignSystem.ts */
 export const ThemeColors = {
   danger: {
-    text: 'text-destructive-foreground' // ← Mismo contexto
+    text: 'text-destructive-foreground'; // ← Mismo contexto
+
   }
 }
 ```
@@ -377,11 +399,11 @@ export const ThemeColors = {
 // UI: La máquina (genérica)
 function DataTable<T>({ columns, data, actions }: Props<T>) {}
 
-// App: La configuración (específica)  
+// App: La configuración (específica)
 const catalogoColumns = [
   { key: 'nombre', label: 'Nombre' },
-  { key: 'estado', label: 'Estado' }
-]
+  { key: 'estado', label: 'Estado' },
+];
 ```
 
 ### **5. Build Strategy**
@@ -405,6 +427,7 @@ pnpm dev --filter=super-admin  # Solo una app
 ## 🚨 Errores Comunes y Soluciones
 
 ### **Error: Module not found '@repo/ui/configs/DesignSystem'**
+
 ```bash
 # Causa: Package no built o export no definido
 # Solución:
@@ -413,18 +436,21 @@ pnpm build --filter=@repo/ui
 ```
 
 ### **Error: CSS variables not working**
+
 ```bash
 # Causa: Variables CSS en contexto equivocado
 # Solución: Mover DesignSystem.ts al mismo package que styles.css
 ```
 
 ### **Error: Circular dependency detected**
+
 ```bash
 # Causa: Violación de jerarquía apps → ui → shared
 # Solución: Reestructurar imports respetando la jerarquía
 ```
 
 ### **Performance: Hot reload muy lento**
+
 ```bash
 # Causa: Demasiada lógica específica en packages/
 # Solución: Mover lógica específica a apps/, mantener solo genéricos en packages/
@@ -443,8 +469,8 @@ Esta arquitectura está diseñada para:
 - ✅ **Type safety** completo con TypeScript
 - ✅ **Developer Experience** optimizada
 
-**Recuerda la regla de oro:** *Si se reutiliza entre apps → Shared. Si no se reutiliza → App específica.*
+**Recuerda la regla de oro:** _Si se reutiliza entre apps → Shared. Si no se reutiliza → App específica._
 
 ---
 
-*📝 Documento mantenido por el equipo de desarrollo. Última actualización: Enero 2025*
+_📝 Documento mantenido por el equipo de desarrollo. Última actualización: Enero 2025_

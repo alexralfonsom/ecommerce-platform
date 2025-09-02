@@ -16,7 +16,7 @@ export async function setAuth0LogoutCookie(data: Auth0LogoutData) {
     // Server-side
     const cookieStore = await cookies();
     const encryptedData = Buffer.from(JSON.stringify(data)).toString('base64');
-    
+
     cookieStore.set(COOKIE_NAME, encryptedData, COOKIE_OPTIONS);
   }
 }
@@ -25,10 +25,10 @@ export async function getAuth0LogoutCookie(): Promise<Auth0LogoutData | null> {
   if (typeof window !== 'undefined') {
     // Client-side - usar document.cookie
     const cookieList = document.cookie.split(';');
-    const cookie = cookieList.find(c => c.trim().startsWith(`${COOKIE_NAME}=`));
-    
+    const cookie = cookieList.find((c) => c.trim().startsWith(`${COOKIE_NAME}=`));
+
     if (!cookie) return null;
-    
+
     try {
       const encryptedData = cookie.split('=')[1];
       const decryptedData = Buffer.from(encryptedData, 'base64').toString('utf-8');
@@ -41,9 +41,9 @@ export async function getAuth0LogoutCookie(): Promise<Auth0LogoutData | null> {
     // Server-side
     const cookieStore = await cookies();
     const encryptedData = cookieStore.get(COOKIE_NAME)?.value;
-    
+
     if (!encryptedData) return null;
-    
+
     try {
       const decryptedData = Buffer.from(encryptedData, 'base64').toString('utf-8');
       return JSON.parse(decryptedData);

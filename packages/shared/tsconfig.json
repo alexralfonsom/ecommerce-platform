@@ -7,29 +7,12 @@
     "noEmit": false,
     "incremental": false,
     "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-      "@lib/*": [
-        "./src/lib/*"
-      ],
-      "@data/*": [
-        "./src/data/*"
-      ],
-      "@configs/*": [
-        "./src/configs/*"
-      ]
+      "@/*": ["./src/*"],
+      "@lib/*": ["./src/lib/*"],
+      "@data/*": ["./src/data/*"],
+      "@configs/*": ["./src/configs/*"]
     }
   },
-  "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "build",
-    "storybook-static",
-    ".next",
-    "coverage"
-  ]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "build", "storybook-static", ".next", "coverage"]
 }

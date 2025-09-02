@@ -1,8 +1,20 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from "zod";
-import { Form, FormFieldWrapper, Input, Textarea, Button, Checkbox, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@repo/ui';
+import * as z from 'zod';
+import {
+  Form,
+  FormFieldWrapper,
+  Input,
+  Textarea,
+  Button,
+  Checkbox,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@repo/ui';
 import React from 'react';
 
 const meta: Meta<typeof FormFieldWrapper> = {
@@ -49,11 +61,11 @@ type Story = StoryObj<typeof FormFieldWrapper>;
 // COMPONENTE WRAPPER PARA STORIES
 // ================================
 
-function StoryWrapper({ 
-  children, 
-  schema 
-}: { 
-  children: (form: any) => React.ReactNode; 
+function StoryWrapper({
+  children,
+  schema,
+}: {
+  children: (form: any) => React.ReactNode;
   schema: any;
 }) {
   const form = useForm({
@@ -64,9 +76,7 @@ function StoryWrapper({
   return (
     <div className="mx-auto max-w-md">
       <Form {...form}>
-        <form className="space-y-4">
-          {children(form)}
-        </form>
+        <form className="space-y-4">{children(form)}</form>
       </Form>
     </div>
   );
@@ -89,9 +99,7 @@ export const BasicInput: Story = {
             name="name"
             control={form.control}
             label="Nombre completo"
-            render={({ field }) => (
-              <Input {...field} placeholder="Juan Pérez" />
-            )}
+            render={({ field }) => <Input {...field} placeholder="Juan Pérez" />}
           />
         )}
       </StoryWrapper>
@@ -113,9 +121,7 @@ export const WithDescription: Story = {
             control={form.control}
             label="Correo electrónico"
             description="Usaremos este email para contactarte"
-            render={({ field }) => (
-              <Input {...field} type="email" placeholder="juan@ejemplo.com" />
-            )}
+            render={({ field }) => <Input {...field} type="email" placeholder="juan@ejemplo.com" />}
           />
         )}
       </StoryWrapper>
@@ -137,9 +143,7 @@ export const WithHelpText: Story = {
             control={form.control}
             label="Contraseña"
             helpText="Mínimo 8 caracteres, incluye números y símbolos"
-            render={({ field }) => (
-              <Input {...field} type="password" placeholder="********" />
-            )}
+            render={({ field }) => <Input {...field} type="password" placeholder="********" />}
           />
         )}
       </StoryWrapper>
@@ -161,13 +165,11 @@ export const WithLabelSuffix: Story = {
             control={form.control}
             label="Contraseña"
             labelSuffix={
-              <button type="button" className="text-xs underline text-blue-600">
+              <button type="button" className="text-xs text-blue-600 underline">
                 ¿Olvidaste tu contraseña?
               </button>
             }
-            render={({ field }) => (
-              <Input {...field} type="password" placeholder="********" />
-            )}
+            render={({ field }) => <Input {...field} type="password" placeholder="********" />}
           />
         )}
       </StoryWrapper>
@@ -178,7 +180,10 @@ export const WithLabelSuffix: Story = {
 export const TextAreaExample: Story = {
   render: () => {
     const schema = z.object({
-      message: z.string().min(10, 'Mensaje debe tener al menos 10 caracteres').max(500, 'Máximo 500 caracteres'),
+      message: z
+        .string()
+        .min(10, 'Mensaje debe tener al menos 10 caracteres')
+        .max(500, 'Máximo 500 caracteres'),
     });
 
     return (
@@ -207,7 +212,7 @@ export const TextAreaExample: Story = {
 export const CheckboxExample: Story = {
   render: () => {
     const schema = z.object({
-      terms: z.boolean().refine(val => val === true, 'Debes aceptar los términos'),
+      terms: z.boolean().refine((val) => val === true, 'Debes aceptar los términos'),
     });
 
     return (
@@ -220,10 +225,7 @@ export const CheckboxExample: Story = {
             description="Lee y acepta nuestros términos de servicio"
             render={({ field }) => (
               <div className="flex items-center space-x-2">
-                <Checkbox
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
+                <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                 <span className="text-sm">Acepto los términos y condiciones</span>
               </div>
             )}
@@ -316,22 +318,20 @@ export const CompleteFormExample: Story = {
       phone: z.string().optional(),
       role: z.string().min(1, 'Debe seleccionar un rol'),
       bio: z.string().max(200, 'Biografía no puede exceder 200 caracteres').optional(),
-      terms: z.boolean().refine(val => val === true, 'Debe aceptar los términos'),
+      terms: z.boolean().refine((val) => val === true, 'Debe aceptar los términos'),
     });
 
     return (
       <StoryWrapper schema={schema}>
         {(form) => (
           <>
-            <h3 className="text-lg font-semibold mb-4">Registro de Usuario</h3>
-            
+            <h3 className="mb-4 text-lg font-semibold">Registro de Usuario</h3>
+
             <FormFieldWrapper
               name="name"
               control={form.control}
               label="Nombre completo"
-              render={({ field }) => (
-                <Input {...field} placeholder="Juan Pérez" />
-              )}
+              render={({ field }) => <Input {...field} placeholder="Juan Pérez" />}
             />
 
             <FormFieldWrapper
@@ -377,9 +377,7 @@ export const CompleteFormExample: Story = {
               control={form.control}
               label="Biografía"
               labelSuffix={
-                <span className="text-xs text-gray-500">
-                  {form.watch('bio')?.length || 0}/200
-                </span>
+                <span className="text-xs text-gray-500">{form.watch('bio')?.length || 0}/200</span>
               }
               render={({ field }) => (
                 <Textarea {...field} placeholder="Cuéntanos sobre ti..." rows={3} />
@@ -392,10 +390,7 @@ export const CompleteFormExample: Story = {
               label="Términos y condiciones"
               render={({ field }) => (
                 <div className="flex items-center space-x-2">
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
+                  <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                   <span className="text-sm">Acepto los términos y condiciones</span>
                 </div>
               )}

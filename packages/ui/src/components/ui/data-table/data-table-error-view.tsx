@@ -218,7 +218,7 @@ export function DataTableErrorView({
         </div>
         {/* Elementos decorativos */}
         <div
-          className={`absolute -right-1 -top-1 h-6 w-6 rounded-full ${colors.decorative} opacity-20`}
+          className={`absolute -top-1 -right-1 h-6 w-6 rounded-full ${colors.decorative} opacity-20`}
         ></div>
         <div
           className={`absolute -bottom-2 -left-2 h-4 w-4 rounded-full ${colors.decorative} opacity-30`}
@@ -228,15 +228,15 @@ export function DataTableErrorView({
       {/* 📝 Contenido del error */}
       <h3 className="mb-3 text-lg font-semibold">{config.title}</h3>
 
-      <p className="text-muted-foreground mb-8 max-w-md text-base leading-relaxed">
+      <p className="mb-8 max-w-md text-base leading-relaxed text-muted-foreground">
         {config.description}
       </p>
 
       {/* 🔧 Mensaje técnico del error (solo si hay y en desarrollo) */}
       {showDetails && errorMessage && (
-        <div className="bg-muted/30 mb-6 max-w-lg rounded-lg border p-3">
-          <p className="text-muted-foreground mb-1 text-xs font-medium">Detalles técnicos:</p>
-          <p className="text-destructive font-mono text-xs">{errorMessage}</p>
+        <div className="mb-6 max-w-lg rounded-lg border bg-muted/30 p-3">
+          <p className="mb-1 text-xs font-medium text-muted-foreground">Detalles técnicos:</p>
+          <p className="font-mono text-xs text-destructive">{errorMessage}</p>
         </div>
       )}
 

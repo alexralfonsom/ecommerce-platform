@@ -102,26 +102,26 @@ export function CatalogoForm({
             )}
           />
 
-        {/* Información adicional para modo edición */}
-        {mode === 'edit' && initialData && (
-          <div className="space-y-2 rounded-lg bg-muted/50 p-4">
-            <h4 className="text-sm font-medium text-foreground">Información del registro</h4>
-            <div className="grid grid-cols-1 gap-2 text-xs text-muted-foreground">
-              <div className="flex justify-between">
-                <span>ID:</span>
-                <span className="font-mono">{initialData.id}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Creado:</span>
-                <span>{new Date(initialData.fechaCreacion).toLocaleDateString()}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Por:</span>
-                <span>{initialData.creadoPor}</span>
+          {/* Información adicional para modo edición */}
+          {mode === 'edit' && initialData && (
+            <div className="space-y-2 rounded-lg bg-muted/50 p-4">
+              <h4 className="text-sm font-medium text-foreground">Información del registro</h4>
+              <div className="grid grid-cols-1 gap-2 text-xs text-muted-foreground">
+                <div className="flex justify-between">
+                  <span>ID:</span>
+                  <span className="font-mono">{initialData.id}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Creado:</span>
+                  <span>{new Date(initialData.fechaCreacion).toLocaleDateString()}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Por:</span>
+                  <span>{initialData.creadoPor}</span>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
           {/* Botones de acción */}
           <div className="flex items-center justify-end space-x-3 border-t pt-6">

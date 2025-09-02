@@ -51,7 +51,7 @@ export function DataTableRowActions<TData>({ row, actions }: DataTableRowActions
     <div className="flex items-center justify-center">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="data-[state=open]:bg-muted flex h-8 w-8 p-0">
+          <Button variant="ghost" className="flex h-8 w-8 p-0 data-[state=open]:bg-muted">
             <Icon name="MoreVertical" className="h-4 w-4" />
             <span className="sr-only">{t('openMenu')}</span>
           </Button>

@@ -23,14 +23,14 @@ export type SuperRouteConfig = Record<string, DynamicRouteConfig>;
  * Convierte un NavigationItem en una configuración de ruta
  */
 function navigationItemToRouteConfig(
-  item: NavigationItem, 
+  item: NavigationItem,
   menuTypeCode: string,
-  parentPath: string = ''
+  parentPath: string = '',
 ): DynamicRouteConfig {
   // Extraer el segmento de la ruta (sin path padre)
   const pathSegments = item.href.split('/').filter(Boolean);
   const currentSegment = pathSegments[pathSegments.length - 1];
-  
+
   // Detectar si es una ruta dinámica (contiene [id], números, etc.)
   const isDynamic = /^\[.*\]$/.test(currentSegment) || /^[0-9]+$/.test(currentSegment);
 
@@ -47,12 +47,12 @@ function navigationItemToRouteConfig(
   // Procesar children recursivamente
   if (item.children && item.children.length > 0) {
     config.children = {};
-    
-    item.children.forEach(child => {
+
+    item.children.forEach((child) => {
       const childPath = child.href.split('/').filter(Boolean);
       const childSegment = childPath[childPath.length - 1];
       const childKey = isDynamic && /^[0-9]+$/.test(childSegment) ? '[id]' : childSegment;
-      
+
       config.children![childKey] = navigationItemToRouteConfig(child, menuTypeCode, item.href);
     });
   }
@@ -64,15 +64,15 @@ function navigationItemToRouteConfig(
  * Construye una configuración de rutas desde un array de NavigationItems
  */
 export function buildRouteConfigFromMenu(
-  menuItems: NavigationItem[], 
-  menuTypeCode: string
+  menuItems: NavigationItem[],
+  menuTypeCode: string,
 ): SuperRouteConfig {
   const routeConfig: SuperRouteConfig = {};
 
-  menuItems.forEach(item => {
+  menuItems.forEach((item) => {
     // Extraer todos los segmentos de la ruta
     const pathSegments = item.href.split('/').filter(Boolean);
-    
+
     if (pathSegments.length === 0) return;
 
     // Construir la configuración de ruta anidada
@@ -120,15 +120,21 @@ export function buildRouteConfigFromMenu(
 /**
  * Consolida múltiples ROUTE_CONFIGs en un SUPER ROUTE_CONFIG
  */
-export function consolidateRouteConfigs(configs: Array<{
-  menuTypeCode: string;
-  routeConfig: SuperRouteConfig;
-}>): SuperRouteConfig {
+export function consolidateRouteConfigs(
+  configs: Array<{
+    menuTypeCode: string;
+    routeConfig: SuperRouteConfig;
+  }>,
+): SuperRouteConfig {
   const consolidated: SuperRouteConfig = {};
 
   configs.forEach(({ menuTypeCode, routeConfig }) => {
-    console.log(`🔗 Consolidating routes from ${menuTypeCode}:`, Object.keys(routeConfig).length, 'routes');
-    
+    console.log(
+      `🔗 Consolidating routes from ${menuTypeCode}:`,
+      Object.keys(routeConfig).length,
+      'routes',
+    );
+
     // Mergear cada configuración
     Object.entries(routeConfig).forEach(([key, config]) => {
       if (!consolidated[key]) {
@@ -150,7 +156,9 @@ export function consolidateRouteConfigs(configs: Array<{
     });
   });
 
-  console.log(`🎯 SUPER ROUTE_CONFIG generated with ${Object.keys(consolidated).length} root routes`);
+  console.log(
+    `🎯 SUPER ROUTE_CONFIG generated with ${Object.keys(consolidated).length} root routes`,
+  );
   return consolidated;
 }
 
@@ -167,7 +175,7 @@ export const routeConfigUtils = {
 
     const traverse = (obj: any, depth: number = 0) => {
       maxDepth = Math.max(maxDepth, depth);
-      
+
       Object.values(obj).forEach((value: any) => {
         totalRoutes++;
         if (value.children) {
@@ -218,11 +226,11 @@ export const routeConfigUtils = {
     const traverse = (obj: any, path: string = '') => {
       Object.entries(obj).forEach(([key, value]: [string, any]) => {
         const currentPath = path ? `${path}/${key}` : key;
-        
+
         if (value.translationKey) {
           routes.push(currentPath);
         }
-        
+
         if (value.children) {
           traverse(value.children, currentPath);
         }
@@ -231,5 +239,5 @@ export const routeConfigUtils = {
 
     traverse(config);
     return routes.sort();
-  }
+  },
 };

@@ -92,7 +92,7 @@ export default function Catalogos() {
   // ✅ STAT CARDS
   const statCardItems = useMemo(() => {
     const totalCount = items?.length || 0;
-    const activeCount = items?.filter((item : any) => item.activo)?.length || 0;
+    const activeCount = items?.filter((item: any) => item.activo)?.length || 0;
     const inactiveCount = totalCount - activeCount;
     const recentModifiedCount = 10;
 
@@ -159,14 +159,14 @@ export default function Catalogos() {
   // 📊 COMPUTED DATA FOR STATS
   // ===============================
   const statsData = useMemo(() => {
-    const activeCatalogos = items.filter((c : any) => c.activo);
-    const inactiveCatalogos = items.filter((c : any) => !c.activo);
+    const activeCatalogos = items.filter((c: any) => c.activo);
+    const inactiveCatalogos = items.filter((c: any) => !c.activo);
 
     // Calcular "recientes" (últimos 7 días)
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
-    const recentCatalogos = items.filter((c : any) => {
+    const recentCatalogos = items.filter((c: any) => {
       const fechaModificacion = c.fechaCreacion;
       return new Date(fechaModificacion) > sevenDaysAgo;
     });

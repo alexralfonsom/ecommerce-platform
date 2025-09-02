@@ -43,7 +43,11 @@ export function AuthGuard({ children, requiredRoles }: AuthGuardProps) {
 
     // Validación de roles
     console.log(requiredRoles, session);
-    if (requiredRoles && session && !requiredRoles.includes((session.user as ExtendedUser).role ?? '')) {
+    if (
+      requiredRoles &&
+      session &&
+      !requiredRoles.includes((session.user as ExtendedUser).role ?? '')
+    ) {
       router.push(`/${locale}/auth/error?code=403`);
       return;
     }

@@ -99,21 +99,21 @@ export function DeleteConfirmDialog({
                   : 'bg-warning/10 text-warning',
               )}
             >
-              <Icon name="AlertTriangle" className="text-destructive h-5 w-5" />
+              <Icon name="AlertTriangle" className="h-5 w-5 text-destructive" />
             </div>
-            <DialogTitle className="text-foreground text-lg font-semibold">{title}</DialogTitle>
+            <DialogTitle className="text-lg font-semibold text-foreground">{title}</DialogTitle>
           </div>
         </DialogHeader>
 
         {/* Contenido del dialog */}
         <div className="space-y-4">
-          <p className="text-muted-foreground text-sm leading-relaxed">{finalDescription}</p>
+          <p className="text-sm leading-relaxed text-muted-foreground">{finalDescription}</p>
 
           {/* Advertencia adicional */}
-          <div className="border-destructive/20 bg-destructive/5 rounded-lg border p-3">
+          <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-3">
             <div className="flex items-center space-x-2">
-              <Icon name="Info" className="text-destructive h-4 w-4 flex-shrink-0" />
-              <p className="text-destructive text-xs">{t('generalMessageInfo')}</p>
+              <Icon name="Info" className="h-4 w-4 flex-shrink-0 text-destructive" />
+              <p className="text-xs text-destructive">{t('generalMessageInfo')}</p>
             </div>
           </div>
         </div>

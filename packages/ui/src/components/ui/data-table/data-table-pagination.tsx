@@ -20,7 +20,7 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
   const tp = useTranslations('components.pagination');
   return (
     <div className="flex items-center justify-between px-2 py-3">
-      <div className="text-muted-foreground flex-1 text-sm">
+      <div className="flex-1 text-sm text-muted-foreground">
         {table.getFilteredSelectedRowModel().rows.length} {`${tp('of')} `}
         {table.getFilteredRowModel().rows.length} {tp('rowsSelected')}
       </div>

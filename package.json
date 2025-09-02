@@ -11,7 +11,8 @@
     "build": "turbo build",
     "dev": "turbo dev",
     "lint": "turbo lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "format": "prettier --write \"{apps,packages}/*/src/**/*.{js,jsx,ts,tsx,css,scss,md,mdx,json}\" --plugin prettier-plugin-tailwindcss",
+    "format:all": "prettier --write .",
     "type-check": "turbo type-check",
     "clean": "turbo clean && rm -rf node_modules dist",
     "dev:admin": "turbo dev --filter=tenant-admin",
@@ -27,11 +28,12 @@
     "@repo/typescript-config": "workspace:*",
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.6.14",
+    "tailwindcss": "^4.1.12",
     "turbo": "^2.5.6",
     "typescript": "^5.9.2"
   },
   "keywords": [],
   "author": "Alex R Alfonso M",
   "license": "ISC",
-  "packageManager": "pnpm@10.15.0"
+  "packageManager": "pnpm@10.15.1"
 }

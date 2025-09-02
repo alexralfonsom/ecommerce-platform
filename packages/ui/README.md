@@ -33,13 +33,15 @@ El paquete está configurado para ser consumido por otros workspaces con la sigu
 - `lint`: Linting con ESLint
 
 **Proceso automatizado**: El script `build:components` ahora incluye:
+
 1. Compilación TypeScript (`tsc`)
 2. Copia automática de archivos principales (`index.js`, `index.d.ts`)
 3. Corrección automática de paths via `scripts/post-build.js`
 
 **🌐 Multiplataforma**: El script `post-build.js` usa Node.js puro, funciona en:
+
 - ✅ Windows (PowerShell, CMD, Git Bash)
-- ✅ macOS (Terminal, Zsh, Bash)  
+- ✅ macOS (Terminal, Zsh, Bash)
 - ✅ Linux (Bash, Zsh)
 
 ## Estructura de Archivos
@@ -118,6 +120,7 @@ pnpm build:components
 ```
 
 **¡Importante!** Ya no necesitas ejecutar comandos `cp` manuales. El proceso de build es completamente automatizado y incluye:
+
 - ✅ Compilación TypeScript
 - ✅ Copia automática de archivos principales
 - ✅ Corrección automática de paths
@@ -166,6 +169,7 @@ import '@repo/ui/styles.css';
 ## Componentes Disponibles
 
 ### Autenticación
+
 - `AuthGuard`
 - `LoginForm`
 - `CreateAccount`
@@ -175,6 +179,7 @@ import '@repo/ui/styles.css';
 - `UniversalLoginRedirect`
 
 ### Layout
+
 - `DashboardLayout`
 - `AdminSidebar`
 - `BreadcrumbControl`
@@ -184,12 +189,14 @@ import '@repo/ui/styles.css';
 - `LanguageSwitcher`
 
 ### Providers
+
 - `QueryProvider`
 - `SessionWrapper`
 - `ThemeProvider`
 - `ToastProvider`
 
 ### UI Base (Radix UI + shadcn/ui)
+
 - `Button`, `Card`, `Dialog`, `Input`
 - `DataTable` (con paginación, filtros, etc.)
 - `Toast` y `ToastProvider`
@@ -201,11 +208,13 @@ import '@repo/ui/styles.css';
 ### Error: "Cannot find module @repo/ui"
 
 1. **Verificar que el paquete esté compilado**:
+
    ```bash
    cd packages/ui && pnpm build:components
    ```
 
 2. **Verificar que los archivos principales existan**:
+
    ```bash
    ls -la packages/ui/dist/index.*
    ```

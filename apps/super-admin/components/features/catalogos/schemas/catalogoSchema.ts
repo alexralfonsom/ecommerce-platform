@@ -1,5 +1,5 @@
 // src/lib/schemas/catalogoSchema.ts
-import * as z from "zod";
+import * as z from 'zod';
 
 // ===============================
 // 🎯 SCHEMAS BASE PARA CATÁLOGOS

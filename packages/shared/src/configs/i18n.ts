@@ -36,14 +36,14 @@ export const i18n = {
       nativeName: 'Español',
       flag: '🇪🇸',
       code: 'ES',
-      shortCode: 'es'
+      shortCode: 'es',
     } as LanguageInfo,
     en: {
       name: 'English',
       nativeName: 'English',
       flag: '🇺🇸',
       code: 'US',
-      shortCode: 'en'
+      shortCode: 'en',
     } as LanguageInfo,
     // ✅ Fácil extensión para nuevos idiomas:
     // fr: {
@@ -60,7 +60,7 @@ export const i18n = {
     //   code: 'SA',
     //   shortCode: 'ar'
     // } as LanguageInfo,
-  }
+  },
 } as const;
 
 // ✅ Tipos derivados de la configuración
@@ -74,10 +74,10 @@ export const isRTLLocale = (locale: Locale): boolean => {
 
 // ✅ Función helper para obtener todos los locales RTL
 export const getRTLLocales = (): Locale[] => {
-  return i18n.locales.filter(locale => isRTLLocale(locale));
+  return i18n.locales.filter((locale) => isRTLLocale(locale));
 };
 
 // ✅ Función helper para obtener todos los locales LTR
 export const getLTRLocales = (): Locale[] => {
-  return i18n.locales.filter(locale => !isRTLLocale(locale));
+  return i18n.locales.filter((locale) => !isRTLLocale(locale));
 };

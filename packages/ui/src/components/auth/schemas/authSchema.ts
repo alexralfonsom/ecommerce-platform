@@ -1,4 +1,4 @@
-import * as z from "zod";
+import * as z from 'zod';
 
 // Schema para Sign In
 export const signInSchema = z.object({

@@ -11,9 +11,9 @@ export const formatDate = (
   options: Intl.DateTimeFormatOptions = {
     year: 'numeric',
     month: 'short',
-    day: 'numeric'
+    day: 'numeric',
   },
-  locale: string = 'es-ES'
+  locale: string = 'es-ES',
 ): string => {
   try {
     const dateObj = typeof date === 'string' ? new Date(date) : date;
@@ -27,17 +27,18 @@ export const formatDate = (
 /**
  * Formatea una fecha y hora
  */
-export const formatDateTime = (
-  date: string | Date,
-  locale: string = 'es-ES'
-): string => {
-  return formatDate(date, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  }, locale);
+export const formatDateTime = (date: string | Date, locale: string = 'es-ES'): string => {
+  return formatDate(
+    date,
+    {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    },
+    locale,
+  );
 };
 
 /**
@@ -46,7 +47,7 @@ export const formatDateTime = (
 export const formatNumber = (
   number: number,
   options: Intl.NumberFormatOptions = {},
-  locale: string = 'es-ES'
+  locale: string = 'es-ES',
 ): string => {
   try {
     return new Intl.NumberFormat(locale, options).format(number);
@@ -62,13 +63,17 @@ export const formatNumber = (
 export const formatPercentage = (
   value: number,
   decimals: number = 1,
-  locale: string = 'es-ES'
+  locale: string = 'es-ES',
 ): string => {
-  return formatNumber(value / 100, {
-    style: 'percent',
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals,
-  }, locale);
+  return formatNumber(
+    value / 100,
+    {
+      style: 'percent',
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals,
+    },
+    locale,
+  );
 };
 
 /**
@@ -102,7 +107,7 @@ export const titleCase = (str: string): string => {
   return str
     .toLowerCase()
     .split(' ')
-    .map(word => capitalize(word))
+    .map((word) => capitalize(word))
     .join(' ');
 };
 
@@ -122,16 +127,20 @@ export const getInitials = (name: string, maxLength: number = 2): string => {
 
   return name
     .split(' ')
-    .filter(word => word.length > 0)
+    .filter((word) => word.length > 0)
     .slice(0, maxLength)
-    .map(word => word[0].toUpperCase())
+    .map((word) => word[0].toUpperCase())
     .join('');
 };
 
 /**
  * Formatea un estado booleano
  */
-export const formatStatus = (status: boolean, activeText: string = 'Activo', inactiveText: string = 'Inactivo'): string => {
+export const formatStatus = (
+  status: boolean,
+  activeText: string = 'Activo',
+  inactiveText: string = 'Inactivo',
+): string => {
   return status ? activeText : inactiveText;
 };
 

@@ -1,5 +1,5 @@
-import '@repo/ui/styles.css'
-import '@/global.css'
+import '@repo/ui/styles.css';
+import '@/global.css';
 import { Nunito } from 'next/font/google';
 import { i18n, Locale } from '@repo/shared/configs/i18n';
 import { ReactNode } from 'react';

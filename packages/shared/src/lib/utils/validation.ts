@@ -120,7 +120,10 @@ export interface ValidationResult {
   errors: Record<string, string>;
 }
 
-export const validateForm = <T extends Record<string, any>>(data: T, schema: ValidationSchema): ValidationResult => {
+export const validateForm = <T extends Record<string, any>>(
+  data: T,
+  schema: ValidationSchema,
+): ValidationResult => {
   const errors: Record<string, string> = {};
 
   for (const [field, rules] of Object.entries(schema)) {

@@ -30,17 +30,17 @@ export interface ExtendedUser extends BaseUser, AuthTokens, ProviderInfo {
   // Campos específicos de API .NET Core
   tenantId?: string;
   permissions?: string[];
-  
+
   // Nuevos campos requeridos para APIM
   userId?: string; // ID del usuario (puede ser diferente del id)
   platform_role?: string; // Rol de plataforma desde Auth0
-  
+
   // Roles de aplicación NO van en sesión (se cargan on-demand)
   // appRoles?: string[];
   // appPermissions?: string[];
-  
+
   // organizationId removido por ahora (no se usa)
-  
+
   // Campos para auditoría
   internalUserId?: string;
   fullName?: string;
@@ -54,7 +54,7 @@ export interface ExtendedSession {
   accessToken?: string; // Disponible en la sesión
   tokenExpires?: number;
   error?: string;
-  
+
   // Auth0 logout data en cookie separada
   auth0Logout?: {
     id_token: string;
@@ -71,16 +71,16 @@ export interface ExtendedJWT extends AuthTokens {
   tenantId?: string;
   organizationId?: string;
   permissions?: string[];
-  
+
   // Nuevos campos requeridos para APIM
   userId?: string; // ID del usuario para envío al API
   platform_role?: string; // Rol de plataforma desde Auth0
   email?: string; // Email para envío al API
-  
+
   // Roles y permisos de aplicación (dinámicos)
   appRoles?: string[];
   appPermissions?: string[];
-  
+
   error?: string;
 
   // Campos adicionales para auditoría

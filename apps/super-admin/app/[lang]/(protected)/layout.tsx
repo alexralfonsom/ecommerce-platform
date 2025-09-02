@@ -19,7 +19,7 @@ import {
 export default function ProtectedLayout({ children }: { children: React.ReactNode }) {
   const { data: session } = useSession() as { data: ExtendedSession | null };
   useAuthToken();
-  
+
   // 🔄 Cargar menús dinámicamente desde la API con fallback a mocks (PARALELO)
   const dynamicNavigation = useMenuNavigationItems({
     menuTypeCode: 'MAIN_MENU',

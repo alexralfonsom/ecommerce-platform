@@ -10,7 +10,7 @@ graph LR
     B --> C[NextAuth.js]
     C --> D[Azure APIM]
     D --> E[.NET Backend]
-    
+
     A2[Headers] --> D2[APIM Policies]
     D2 --> E2[Minimal [Authorize]]
 ```
@@ -24,7 +24,7 @@ graph LR
     <inbound>
         <!-- Validación de Subscription Key -->
         <check-header name="Ocp-Apim-Subscription-Key" failed-check-httpcode="401" failed-check-error-message="Subscription key required" />
-        
+
         <!-- Validación de JWT Token -->
         <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized">
             <openid-config url="https://YOUR_AUTH0_DOMAIN/.well-known/openid_configuration" />
@@ -39,20 +39,20 @@ graph LR
                 <claim name="email" match="any" />
             </required-claims>
         </validate-jwt>
-        
+
         <!-- Extracción de Claims para Backend -->
         <set-header name="X-User-ID" exists-action="override">
             <value>@(context.Request.Headers.GetValueOrDefault("Authorization","")
                 .Replace("Bearer ","")
                 .AsJwt()?.Claims.GetValueOrDefault("sub", ""))</value>
         </set-header>
-        
+
         <set-header name="X-User-Email" exists-action="override">
             <value>@(context.Request.Headers.GetValueOrDefault("Authorization","")
                 .Replace("Bearer ","")
                 .AsJwt()?.Claims.GetValueOrDefault("email", ""))</value>
         </set-header>
-        
+
         <set-header name="X-User-Roles" exists-action="override">
             <value>@{
                 var jwt = context.Request.Headers.GetValueOrDefault("Authorization","")
@@ -61,11 +61,11 @@ graph LR
                 return roles;
             }</value>
         </set-header>
-        
+
         <!-- Rate Limiting por Usuario -->
-        <rate-limit-by-key calls="100" renewal-period="60" 
+        <rate-limit-by-key calls="100" renewal-period="60"
             counter-key="@(context.Request.Headers.GetValueOrDefault("X-User-ID", "anonymous"))" />
-        
+
         <!-- CORS Policy -->
         <cors allow-credentials="true">
             <allowed-origins>
@@ -86,11 +86,11 @@ graph LR
             </allowed-headers>
         </cors>
     </inbound>
-    
+
     <backend>
         <forward-request />
     </backend>
-    
+
     <outbound>
         <!-- Logging para Auditoría -->
         <log-to-eventhub logger-id="security-logger">
@@ -105,7 +105,7 @@ graph LR
                 ).ToString();
             }
         </log-to-eventhub>
-        
+
         <!-- Security Headers -->
         <set-header name="X-Content-Type-Options" exists-action="override">
             <value>nosniff</value>
@@ -117,7 +117,7 @@ graph LR
             <value>1; mode=block</value>
         </set-header>
     </outbound>
-    
+
     <on-error>
         <!-- Error Logging -->
         <log-to-eventhub logger-id="error-logger">
@@ -168,7 +168,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     {
         options.Authority = "https://YOUR_AUTH0_DOMAIN/";
         options.Audience = "YOUR_API_IDENTIFIER";
-        
+
         // IMPORTANTE: Confiar en headers de APIM
         options.Events = new JwtBearerEvents
         {
@@ -176,26 +176,26 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             {
                 // Extraer claims adicionales de headers APIM
                 var claims = new List<Claim>();
-                
+
                 if (context.HttpContext.Request.Headers.TryGetValue("X-User-ID", out var userId))
                     claims.Add(new Claim("userId", userId!));
-                    
+
                 if (context.HttpContext.Request.Headers.TryGetValue("X-User-Email", out var email))
                     claims.Add(new Claim("email", email!));
-                    
+
                 if (context.HttpContext.Request.Headers.TryGetValue("X-User-Roles", out var roles))
                 {
                     foreach (var role in roles.ToString().Split(','))
                         claims.Add(new Claim(ClaimTypes.Role, role.Trim()));
                 }
-                
+
                 if (context.HttpContext.Request.Headers.TryGetValue("X-Tenant-ID", out var tenantId))
                     claims.Add(new Claim("tenantId", tenantId!));
 
                 // Agregar claims al principal
                 var appIdentity = new ClaimsIdentity(claims);
                 context.Principal!.AddIdentity(appIdentity);
-                
+
                 return Task.CompletedTask;
             }
         };
@@ -206,10 +206,10 @@ builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("RequireAdmin", policy =>
         policy.RequireRole("admin", "super-admin"));
-        
+
     options.AddPolicy("RequireTenant", policy =>
         policy.RequireClaim("tenantId"));
-        
+
     options.AddPolicy("RequireBusiness", policy =>
         policy.RequireRole("business-admin", "tenant-admin"));
 });
@@ -230,11 +230,11 @@ public class CatalogosController : ControllerBase
         // Los claims están disponibles en User.Claims
         var userId = User.FindFirst("userId")?.Value;
         var tenantId = User.FindFirst("tenantId")?.Value;
-        
+
         // Lógica de negocio
         return Ok();
     }
-    
+
     [Authorize(Policy = "RequireAdmin")] // Solo para operaciones críticas
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteCatalogo(int id)
@@ -253,22 +253,22 @@ public class CatalogosController : ControllerBase
 // Auth0 Rule - Agregar roles personalizados
 function addRolesToUser(user, context, callback) {
   const namespace = 'https://yourapp.com/';
-  
+
   // Obtener roles del usuario desde metadata o base de datos
   const assignedRoles = user.app_metadata?.roles || [];
   const permissions = user.app_metadata?.permissions || [];
-  
+
   // Agregar al token
   context.idToken[namespace + 'roles'] = assignedRoles;
   context.accessToken[namespace + 'roles'] = assignedRoles;
   context.accessToken[namespace + 'permissions'] = permissions;
-  
+
   // Agregar tenant info si existe
   if (user.app_metadata?.tenantId) {
     context.idToken[namespace + 'tenantId'] = user.app_metadata.tenantId;
     context.accessToken[namespace + 'tenantId'] = user.app_metadata.tenantId;
   }
-  
+
   callback(null, user, context);
 }
 ```
@@ -296,7 +296,7 @@ export default NextAuth({
       if (account?.access_token) {
         token.accessToken = account.access_token;
       }
-      
+
       // Extraer roles del token Auth0
       if (token.accessToken) {
         const decoded = jwt.decode(token.accessToken as string) as any;
@@ -304,7 +304,7 @@ export default NextAuth({
         token.permissions = decoded?.['https://yourapp.com/permissions'] || [];
         token.tenantId = decoded?.['https://yourapp.com/tenantId'];
       }
-      
+
       return token;
     },
     async session({ session, token }) {
@@ -312,7 +312,7 @@ export default NextAuth({
       session.user.roles = token.roles as string[];
       session.user.permissions = token.permissions as string[];
       session.user.tenantId = token.tenantId as string;
-      
+
       return session;
     },
   },
@@ -322,21 +322,25 @@ export default NextAuth({
 ## Ventajas de esta Arquitectura
 
 ### ✅ Seguridad en Capas
+
 1. **APIM**: Primera línea de defensa (rate limiting, CORS, validation)
 2. **JWT Validation**: Validación de tokens Auth0
 3. **[Authorize]**: Autorización granular en .NET
 
 ### ✅ Performance
+
 - APIM maneja la mayoría de validaciones
 - .NET solo valida roles/permisos específicos
 - Caching automático en APIM
 
 ### ✅ Auditoría Completa
+
 - Logs centralizados en Azure
 - Trazabilidad de todas las operaciones
 - Headers de contexto para debugging
 
 ### ✅ Escalabilidad
+
 - Rate limiting por usuario
 - Load balancing automático
 - Circuit breaker patterns
@@ -350,7 +354,8 @@ export default NextAuth({
 5. **Environment Separation**: Keys diferentes por ambiente
 
 Esta arquitectura te da:
+
 - **Seguridad robusta** con múltiples capas
-- **Performance óptimo** con validación distribuida  
+- **Performance óptimo** con validación distribuida
 - **Flexibilidad** para cambios futuros
 - **Observabilidad** completa de la aplicación

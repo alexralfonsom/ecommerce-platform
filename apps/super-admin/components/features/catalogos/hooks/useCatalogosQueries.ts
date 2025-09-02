@@ -64,7 +64,9 @@ export const useCatalogosQueries = (): CatalogosQueriesReturn => {
 // ===============================
 
 // 🔥 RECOMENDADO: Hook principal para uso general con paginación
-export const useCatalogosOperations = (params?: MaestroCatalogosParameters): CatalogosOperationsReturn => {
+export const useCatalogosOperations = (
+  params?: MaestroCatalogosParameters,
+): CatalogosOperationsReturn => {
   const { usePagedOperations } = useCatalogosQueries();
   return usePagedOperations(params);
 };

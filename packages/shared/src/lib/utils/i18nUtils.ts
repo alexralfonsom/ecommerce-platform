@@ -22,7 +22,9 @@ export const detectLocaleFromHeaders = (request: NextRequest): Locale => {
   try {
     const languages = new Negotiator({ headers: negotiatorHeaders }).languages();
     const matchedLocale = match(languages, i18n.locales, i18n.defaultLocale);
-    return i18n.locales.includes(matchedLocale as Locale) ? (matchedLocale as Locale) : i18n.defaultLocale;
+    return i18n.locales.includes(matchedLocale as Locale)
+      ? (matchedLocale as Locale)
+      : i18n.defaultLocale;
   } catch (error) {
     console.error('Error matching locale from headers:', error);
     return i18n.defaultLocale;
@@ -91,7 +93,9 @@ export const buildLocalizedPath = (pathname: string, newLocale: Locale): string 
  * @returns true si necesita prefijo de idioma
  */
 export const pathNeedsLocalePrefix = (pathname: string): boolean => {
-  return i18n.locales.every((locale) => !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`);
+  return i18n.locales.every(
+    (locale) => !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`,
+  );
 };
 
 /**
@@ -128,8 +132,8 @@ export const getLocalePreference = (): Locale | null => {
   if (typeof document === 'undefined') return null;
 
   const cookies = document.cookie.split(';');
-  const localeCookie = cookies.find(cookie =>
-    cookie.trim().startsWith(`${i18n.cookies.localeCookieName}=`)
+  const localeCookie = cookies.find((cookie) =>
+    cookie.trim().startsWith(`${i18n.cookies.localeCookieName}=`),
   );
 
   if (!localeCookie) return null;
@@ -153,7 +157,7 @@ export const saveLocalePreferenceServer = (response: NextResponse, locale: Local
     value: locale,
     maxAge: i18n.cookies.localeMaxAge,
     path: '/',
-    sameSite: 'lax'
+    sameSite: 'lax',
   });
 
   console.log(`🍪 Server: Saved locale preference: ${locale}`);
@@ -169,9 +173,7 @@ export const getLocalePreferenceServer = (request: NextRequest): Locale | null =
 
   if (!localeCookie) return null;
 
-  return i18n.locales.includes(localeCookie as Locale)
-    ? localeCookie as Locale
-    : null;
+  return i18n.locales.includes(localeCookie as Locale) ? (localeCookie as Locale) : null;
 };
 
 /**
@@ -184,7 +186,7 @@ export const getLocalePreferenceServer = (request: NextRequest): Locale | null =
 export const ensureLocaleCookie = (
   request: NextRequest,
   response: NextResponse,
-  detectedLocale: Locale
+  detectedLocale: Locale,
 ): boolean => {
   const existingCookie = getLocalePreferenceServer(request);
 
@@ -215,9 +217,9 @@ export const getLanguageConfig = (locale: Locale) => {
  * @returns array de idiomas con configuración
  */
 export const getAllLanguages = () => {
-  return i18n.locales.map(locale => ({
+  return i18n.locales.map((locale) => ({
     locale,
-    ...i18n.languages[locale]
+    ...i18n.languages[locale],
   }));
 };
 
@@ -254,7 +256,7 @@ export const getNextLocale = (currentLocale: Locale): Locale => {
 export const validateLocale = (locale: string | null | undefined, fallback?: Locale): Locale => {
   if (!locale) return fallback || i18n.defaultLocale;
 
-  return isValidLocale(locale) ? locale : (fallback || i18n.defaultLocale);
+  return isValidLocale(locale) ? locale : fallback || i18n.defaultLocale;
 };
 
 /**
@@ -266,7 +268,7 @@ export const getLocaleInfo = (locale: Locale) => {
   const config = getLanguageConfig(locale);
   const direction = i18n.langDirection[locale];
   const isRTL = isRTLLocale(locale); // ✅ Usar helper de i18n.ts
-  
+
   return {
     locale,
     config,
@@ -313,9 +315,3 @@ export const getI18nDebugInfo = (request?: NextRequest) => {
 
   return debugInfo;
 };
-
-
-
-
-
-

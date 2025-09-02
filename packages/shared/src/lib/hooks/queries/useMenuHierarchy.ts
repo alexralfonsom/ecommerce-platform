@@ -19,13 +19,11 @@ import * as LucideIcons from 'lucide-react';
 /**
  * Transforma un MenuItem de la API a NavigationItem
  */
-function transformApiMenuToNavigationItem(
-  apiItem: MenuItemApiResponse,
-): NavigationItem {
+function transformApiMenuToNavigationItem(apiItem: MenuItemApiResponse): NavigationItem {
   // Validar que el icono existe en Lucide
   const iconName = apiItem.icon as keyof typeof LucideIcons;
   const isValidIcon = iconName && iconName in LucideIcons;
-  
+
   return {
     name: apiItem.name,
     href: apiItem.url,
@@ -38,11 +36,9 @@ function transformApiMenuToNavigationItem(
 /**
  * Transforma un MenuItem de la API a EnrichedMenuItem (con metadatos adicionales)
  */
-function transformApiMenuToEnrichedItem(
-  apiItem: MenuItemApiResponse,
-): EnrichedMenuItem {
+function transformApiMenuToEnrichedItem(apiItem: MenuItemApiResponse): EnrichedMenuItem {
   const baseItem = transformApiMenuToNavigationItem(apiItem);
-  
+
   return {
     ...baseItem,
     globalUniqueId: apiItem.globalUniqueId,
@@ -58,13 +54,13 @@ function transformApiMenuToEnrichedItem(
  */
 const createMenuQueryKeys = {
   all: ['menu-hierarchy'] as const,
-  byLanguage: (languageCode: string, menuTypeCode: string) => 
+  byLanguage: (languageCode: string, menuTypeCode: string) =>
     [...createMenuQueryKeys.all, languageCode, menuTypeCode] as const,
 };
 
 /**
  * Hook para cargar y gestionar la jerarquía de menús dinámicos
- * 
+ *
  * Características:
  * - Detección automática del idioma desde la URL
  * - Cache inteligente con stale time configurable
@@ -74,7 +70,7 @@ const createMenuQueryKeys = {
  */
 export function useMenuHierarchy(config: MenuHierarchyHookConfig = {}): MenuHierarchyState {
   const pathname = usePathname();
-  
+
   // Obtener idioma actual desde la URL o fallback al default
   const currentLocale = getCurrentLocaleFromPath(pathname) || i18n.defaultLocale;
   const languageCode = currentLocale;
@@ -93,10 +89,10 @@ export function useMenuHierarchy(config: MenuHierarchyHookConfig = {}): MenuHier
    */
   const getAppropiateFallbackMock = React.useCallback((menuType: string): NavigationItem[] => {
     const mockMap: Record<string, NavigationItem[]> = {
-      'MAIN_MENU': mockNavigation,
-      'SECONDARY_MENU': MockNavSecondary,
-      'MENU_GLOBAL_ADMINISTRATIVE': MockProjectItems as NavigationItem[],
-      'USER_MENU': mockUserOptions as NavigationItem[],
+      MAIN_MENU: mockNavigation,
+      SECONDARY_MENU: MockNavSecondary,
+      MENU_GLOBAL_ADMINISTRATIVE: MockProjectItems as NavigationItem[],
+      USER_MENU: mockUserOptions as NavigationItem[],
     };
 
     return mockMap[menuType] || [];
@@ -107,32 +103,36 @@ export function useMenuHierarchy(config: MenuHierarchyHookConfig = {}): MenuHier
    * - DEV: Usa mocks específicos por tipo de menú
    * - PROD: Array vacío para mejor UX (evita mostrar datos incorrectos)
    */
-  const getIntelligentFallback = React.useCallback((menuType: string, enableFallback: boolean): NavigationItem[] => {
-    // Si fallback está deshabilitado, siempre array vacío
-    if (!enableFallback) {
+  const getIntelligentFallback = React.useCallback(
+    (menuType: string, enableFallback: boolean): NavigationItem[] => {
+      // Si fallback está deshabilitado, siempre array vacío
+      if (!enableFallback) {
+        return [];
+      }
+
+      // En desarrollo: usar mocks específicos
+      if (process.env.NODE_ENV === 'development') {
+        const specificMock = getAppropiateFallbackMock(menuType);
+        console.log(`🔧 DEV: Using specific mock for ${menuType}:`, specificMock.length, 'items');
+        return specificMock;
+      }
+
+      // En producción: array vacío para mejor UX
+      console.log(`🏭 PROD: Using empty fallback for ${menuType} to avoid user confusion`);
       return [];
-    }
-
-    // En desarrollo: usar mocks específicos
-    if (process.env.NODE_ENV === 'development') {
-      const specificMock = getAppropiateFallbackMock(menuType);
-      console.log(`🔧 DEV: Using specific mock for ${menuType}:`, specificMock.length, 'items');
-      return specificMock;
-    }
-
-    // En producción: array vacío para mejor UX
-    console.log(`🏭 PROD: Using empty fallback for ${menuType} to avoid user confusion`);
-    return [];
-  }, [getAppropiateFallbackMock]);
+    },
+    [getAppropiateFallbackMock],
+  );
 
   // Query para obtener menús desde la API
   const queryOptions: UseQueryOptions<MenuHierarchyApiResponse> = {
     queryKey: createMenuQueryKeys.byLanguage(languageCode, menuTypeCode),
-    queryFn: () => menuHierarchyApi.getMenuHierarchy({
-      menuTypeCode,
-      languageCode,
-      includeInactive,
-    }),
+    queryFn: () =>
+      menuHierarchyApi.getMenuHierarchy({
+        menuTypeCode,
+        languageCode,
+        includeInactive,
+      }),
     enabled: enableCache,
     staleTime,
     gcTime: 10 * 60 * 1000, // 10 minutos en cache
@@ -155,7 +155,7 @@ export function useMenuHierarchy(config: MenuHierarchyHookConfig = {}): MenuHier
   const processedData = React.useMemo(() => {
     let items: NavigationItem[] = [];
     let enrichedItems: EnrichedMenuItem[] = [];
-    
+
     if (query.isSuccess && query.data?.isSuccess && query.data.value?.items) {
       // Transformar datos de la API
       try {
@@ -163,10 +163,10 @@ export function useMenuHierarchy(config: MenuHierarchyHookConfig = {}): MenuHier
         enrichedItems = query.data.value.items.map(transformApiMenuToEnrichedItem);
       } catch (transformError) {
         console.error('❌ Error transforming menu data:', transformError);
-        
+
         // Estrategia inteligente de fallback por transformación
         items = getIntelligentFallback(menuTypeCode, fallbackToMocks);
-        enrichedItems = items.map(item => ({
+        enrichedItems = items.map((item) => ({
           ...item,
           globalUniqueId: `transform-fallback-${Date.now()}-${Math.random()}`,
           description: `Transform fallback: ${item.name}`,
@@ -175,14 +175,14 @@ export function useMenuHierarchy(config: MenuHierarchyHookConfig = {}): MenuHier
       }
     } else if (query.isError) {
       // Estrategia inteligente para errores de API
-      console.warn('⚠️ API error for menu:', { 
-        menuTypeCode, 
+      console.warn('⚠️ API error for menu:', {
+        menuTypeCode,
         error: query.error?.message,
-        environment: process.env.NODE_ENV
+        environment: process.env.NODE_ENV,
       });
-      
+
       items = getIntelligentFallback(menuTypeCode, fallbackToMocks);
-      enrichedItems = items.map(item => ({
+      enrichedItems = items.map((item) => ({
         ...item,
         globalUniqueId: `api-error-fallback-${Date.now()}-${Math.random()}`,
         description: `API error fallback: ${item.name}`,
@@ -191,7 +191,14 @@ export function useMenuHierarchy(config: MenuHierarchyHookConfig = {}): MenuHier
     }
 
     return { items, enrichedItems };
-  }, [query.data, query.isSuccess, query.isError, fallbackToMocks, menuTypeCode, getIntelligentFallback]);
+  }, [
+    query.data,
+    query.isSuccess,
+    query.isError,
+    fallbackToMocks,
+    menuTypeCode,
+    getIntelligentFallback,
+  ]);
 
   return {
     items: processedData.items,
@@ -218,15 +225,16 @@ export function useMenuNavigationItems(config: MenuHierarchyHookConfig = {}): Na
  */
 export function useMenuHierarchyWithStatus(config: MenuHierarchyHookConfig = {}) {
   const menuState = useMenuHierarchy(config);
-  
+
   return {
     ...menuState,
     isEmpty: menuState.items.length === 0,
     isUsingFallback: menuState.isError && config.fallbackToMocks !== false,
     hasError: menuState.isError && !config.fallbackToMocks,
-    isIntelligentFallback: process.env.NODE_ENV === 'development' ? 
-      menuState.isError && menuState.items.length > 0 : 
-      menuState.isError && menuState.items.length === 0,
+    isIntelligentFallback:
+      process.env.NODE_ENV === 'development'
+        ? menuState.isError && menuState.items.length > 0
+        : menuState.isError && menuState.items.length === 0,
   };
 }
 

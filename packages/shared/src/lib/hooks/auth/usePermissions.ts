@@ -13,7 +13,7 @@ export interface PermissionCheck {
   hasAnyPermission: (permissions: string[]) => boolean;
   hasAllPermissions: (permissions: string[]) => boolean;
   getUserPermissions: () => string[];
-  
+
   // Roles y permisos de aplicación
   hasAppRole: (role: string) => boolean;
   hasAnyAppRole: (roles: string[]) => boolean;
@@ -21,7 +21,7 @@ export interface PermissionCheck {
   hasAnyAppPermission: (permissions: string[]) => boolean;
   getAppRoles: () => string[];
   getAppPermissions: () => string[];
-  
+
   // Roles de plataforma
   hasPlatformRole: (role: 'super-admin' | 'tenant-admin' | 'tenant-user') => boolean;
   isAdmin: () => boolean;
@@ -31,12 +31,12 @@ export interface PermissionCheck {
 
 /**
  * Hook para verificar permisos del usuario autenticado
- * 
+ *
  * @example
  * ```tsx
  * function CatalogsList() {
  *   const { canCreate, canDelete, hasPermission } = usePermissions();
- *   
+ *
  *   return (
  *     <div>
  *       {canCreate('saas') && <CreateCatalogButton />}
@@ -52,11 +52,11 @@ export function usePermissions(): PermissionCheck {
   const extendedSession = session as ExtendedSession | null;
   const userPermissions = extendedSession?.user?.permissions || [];
   const platformRole = extendedSession?.user?.role || '';
-  
+
   // App roles se consultan on-demand para reducir tamaño de sesión
   const [appRoles, setAppRoles] = React.useState<string[]>([]);
   const [appPermissions, setAppPermissions] = React.useState<string[]>([]);
-  
+
   // Cargar app roles cuando sea necesario
   React.useEffect(() => {
     if (extendedSession?.user?.tenantId && extendedSession?.user?.id) {
@@ -68,9 +68,7 @@ export function usePermissions(): PermissionCheck {
   // Permisos de plataforma (Auth0)
   const canRead = (resource: 'admin' | 'saas' | 'system'): boolean => {
     if (resource === 'system') {
-      return userPermissions.some(permission => 
-        permission.startsWith('read:system:')
-      );
+      return userPermissions.some((permission) => permission.startsWith('read:system:'));
     }
     return userPermissions.includes(`read:${resource}`);
   };
@@ -81,9 +79,7 @@ export function usePermissions(): PermissionCheck {
 
   const canUpdate = (resource: 'admin' | 'saas' | 'system'): boolean => {
     if (resource === 'system') {
-      return userPermissions.some(permission => 
-        permission.startsWith('update:system:')
-      );
+      return userPermissions.some((permission) => permission.startsWith('update:system:'));
     }
     return userPermissions.includes(`update:${resource}`);
   };
@@ -97,11 +93,11 @@ export function usePermissions(): PermissionCheck {
   };
 
   const hasAnyPermission = (permissions: string[]): boolean => {
-    return permissions.some(permission => userPermissions.includes(permission));
+    return permissions.some((permission) => userPermissions.includes(permission));
   };
 
   const hasAllPermissions = (permissions: string[]): boolean => {
-    return permissions.every(permission => userPermissions.includes(permission));
+    return permissions.every((permission) => userPermissions.includes(permission));
   };
 
   const getUserPermissions = (): string[] => {
@@ -114,7 +110,7 @@ export function usePermissions(): PermissionCheck {
   };
 
   const hasAnyAppRole = (roles: string[]): boolean => {
-    return roles.some(role => appRoles.includes(role));
+    return roles.some((role) => appRoles.includes(role));
   };
 
   const hasAppPermission = (permission: string): boolean => {
@@ -122,7 +118,7 @@ export function usePermissions(): PermissionCheck {
   };
 
   const hasAnyAppPermission = (permissions: string[]): boolean => {
-    return permissions.some(permission => appPermissions.includes(permission));
+    return permissions.some((permission) => appPermissions.includes(permission));
   };
 
   const getAppRoles = (): string[] => {
@@ -185,7 +181,7 @@ export function useRoles() {
   };
 
   const hasAnyRole = (roles: string[]): boolean => {
-    return roles.some(role => userRoles.includes(role));
+    return roles.some((role) => userRoles.includes(role));
   };
 
   const getUserRoles = (): string[] => {
@@ -201,11 +197,11 @@ export function useRoles() {
 
 /**
  * Componente de protección para renderizar condicionalmente basado en permisos
- * 
+ *
  * @example
  * ```tsx
- * <ProtectedComponent 
- *   permissions={['create:saas']} 
+ * <ProtectedComponent
+ *   permissions={['create:saas']}
  *   fallback={<div>No tienes permisos</div>}
  * >
  *   <CreateButton />
@@ -225,7 +221,7 @@ export function ProtectedComponent({
   permissions = [],
   requireAll = false,
   fallback = null,
-  roles = []
+  roles = [],
 }: ProtectedComponentProps) {
   const { hasPermission, hasAnyPermission, hasAllPermissions } = usePermissions();
   const { hasRole, hasAnyRole } = useRoles();

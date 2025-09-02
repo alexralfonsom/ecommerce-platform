@@ -64,7 +64,7 @@ pnpm clean
 ```bash
 # Run specific applications
 pnpm dev:admin      # tenant-admin
-pnpm dev:store      # tenant-store  
+pnpm dev:store      # tenant-store
 pnpm dev:super      # super-admin
 
 # Build specific applications
@@ -82,7 +82,7 @@ pnpm lint:admin     # tenant-admin
 # Run dev for specific workspace
 turbo dev --filter=super-admin
 
-# Run build for specific workspace  
+# Run build for specific workspace
 turbo build --filter=tenant-admin
 
 # Run multiple workspaces
@@ -120,6 +120,7 @@ const catalogsOperations = useGenericCRUD({
 ```
 
 **Key Features:**
+
 - Optimistic updates for better UX
 - Automatic cache invalidation
 - Generic pagination support
@@ -134,7 +135,10 @@ All API calls follow a consistent pattern:
 // Located in: packages/shared/src/lib/api/endpoints/
 export const entityApi = {
   getAll: (params?) => Promise<{ value: Entity[] }>,
-  getPaged: (params?) => Promise<{ value: { items: Entity[], totalCount: number, pageNumber: number, totalPages: number } }>,
+  getPaged: (params?) =>
+    Promise<{
+      value: { items: Entity[]; totalCount: number; pageNumber: number; totalPages: number };
+    }>,
   getById: (id) => Promise<{ value: Entity }>,
   create: (data) => Promise<{ value: Entity }>,
   update: (id, data) => Promise<void>,
@@ -167,6 +171,7 @@ Contains reusable business logic:
 ### Feature Organization
 
 Each feature follows this structure:
+
 ```
 packages/shared/src/
 ├── lib/
@@ -198,6 +203,7 @@ packages/shared/src/
 ### TypeScript Configuration
 
 Multiple configurations in `packages/typescript-config/`:
+
 - `base.json` - Base TypeScript settings
 - `nextjs.json` - Next.js specific settings
 - `react-library.json` - React library settings
@@ -233,6 +239,7 @@ cd packages/shared && pnpm type-check
 ### Build Dependencies
 
 The `turbo.json` configuration defines:
+
 - **Build dependencies**: Apps depend on packages being built first
 - **Caching**: Optimized for development and build performance
 - **Outputs**: Defined for `.next/**`, `dist/**`, and `storybook-static/**`
@@ -254,6 +261,7 @@ The `turbo.json` configuration defines:
 ### Workspace Dependencies
 
 Use workspace protocol for internal dependencies:
+
 ```json
 {
   "dependencies": {
@@ -276,8 +284,9 @@ Use workspace protocol for internal dependencies:
 ### Working with Multi-Tenant Architecture
 
 The platform supports multiple tenant types:
+
 - **Super Admin**: Platform-wide administration
-- **Tenant Admin**: Tenant-specific administration  
+- **Tenant Admin**: Tenant-specific administration
 - **Tenant Store**: Customer-facing interface
 
 Each runs on different ports and may have different feature sets.

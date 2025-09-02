@@ -1,9 +1,6 @@
 // src/lib/api/endpoints/menuHierarchy.ts
 import { getUniversalAdminApiClient } from '../client';
-import type { 
-  MenuHierarchyApiResponse, 
-  MenuHierarchyParams 
-} from '@/types/menu';
+import type { MenuHierarchyApiResponse, MenuHierarchyParams } from '@/types/menu';
 
 /**
  * Cliente API para operaciones con MenuHierarchy
@@ -11,7 +8,7 @@ import type {
  */
 class MenuHierarchyApi {
   private client = getUniversalAdminApiClient();
-  
+
   /**
    * Obtiene la jerarquía de menús por idioma
    * @param params Parámetros de consulta (menuTypeCode, languageCode, includeInactive)
@@ -26,7 +23,7 @@ class MenuHierarchyApi {
 
     // Construir la URL completa del endpoint
     const endpoint = `api/MenuHierarchy/by-language?${queryParams.toString()}`;
-    
+
     console.log('🔗 Calling MenuHierarchy API:', {
       endpoint,
       params,
@@ -34,7 +31,7 @@ class MenuHierarchyApi {
 
     try {
       const response = await this.client.get<MenuHierarchyApiResponse>(endpoint);
-      
+
       console.log('✅ MenuHierarchy API Response:', {
         success: response.isSuccess,
         itemCount: response.value?.items?.length || 0,

@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "es6"
-    ],
+    "lib": ["dom", "dom.iterable", "es6"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -20,8 +16,6 @@
     "declaration": true,
     "declarationMap": true
   },
-  "include": [
-    "src"
-  ],
+  "include": ["src"],
   "exclude": ["node_modules", "dist", "build"]
 }

@@ -1,23 +1,23 @@
-import type { StorybookConfig } from "@storybook/nextjs-vite";
+import type { StorybookConfig } from '@storybook/nextjs-vite';
 import path from 'path';
 
 const config: StorybookConfig = {
   stories: [
-    "../src/**/*.mdx",
-    "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)",
+    '../src/**/*.mdx',
+    '../src/**/*.stories.@(js|jsx|mjs|ts|tsx)',
     // Específicamente el Toast story que acabamos de arreglar
     //"../../../packages/ui/src/components/ui/Toast/*.stories.@(js|jsx|mjs|ts|tsx)",
   ],
   addons: [
-    "@chromatic-com/storybook", 
+    '@chromatic-com/storybook',
     '@storybook/addon-docs',
     '@storybook/addon-onboarding',
     '@storybook/addon-a11y',
-    '@storybook/addon-vitest'
+    '@storybook/addon-vitest',
   ],
   framework: {
-    "name": "@storybook/nextjs-vite",
-    "options": {}
+    name: '@storybook/nextjs-vite',
+    options: {},
   },
   typescript: {
     check: false,
@@ -44,22 +44,33 @@ const config: StorybookConfig = {
         '@components/ui': path.resolve(__dirname, '../../../packages/ui/src/components/ui'),
         '@components/layout': path.resolve(__dirname, '../../../packages/ui/src/components/layout'),
         '@components/auth': path.resolve(__dirname, '../../../packages/ui/src/components/auth'),
-        '@components/not-found': path.resolve(__dirname, '../../../packages/ui/src/components/not-found'),
-        '@/configs/DesignSystem': path.resolve(__dirname, '../../../packages/ui/src/configs/DesignSystem'),
-        '@configs/i18n': path.resolve(__dirname, '../../../packages/shared/src/configs/i18n')
+        '@components/not-found': path.resolve(
+          __dirname,
+          '../../../packages/ui/src/components/not-found',
+        ),
+        '@/configs/DesignSystem': path.resolve(
+          __dirname,
+          '../../../packages/ui/src/configs/DesignSystem',
+        ),
+        '@configs/i18n': path.resolve(__dirname, '../../../packages/shared/src/configs/i18n'),
       };
     }
 
     // Optimizaciones de Vite
     config.optimizeDeps = {
       ...config.optimizeDeps,
-      include: [...(config.optimizeDeps?.include || []), 'lucide-react', 'clsx', 'tailwind-merge', '@repo/ui', '@repo/shared'],
+      include: [
+        ...(config.optimizeDeps?.include || []),
+        'lucide-react',
+        'clsx',
+        'tailwind-merge',
+        '@repo/ui',
+        '@repo/shared',
+      ],
     };
 
     return config;
   },
-  staticDirs: [
-    "../public"
-  ]
+  staticDirs: ['../public'],
 };
 export default config;

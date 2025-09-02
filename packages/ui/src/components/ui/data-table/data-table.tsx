@@ -23,7 +23,7 @@ export function DataTable<TData, TValue>({ table }: DataTableProps<TData, TValue
     <React.Fragment>
       <div className="overflow-hidden rounded-lg border shadow-sm">
         <Table>
-          <TableHeader className="bg-muted sticky top-0 z-10 h-12">
+          <TableHeader className="sticky top-0 z-10 h-12 bg-muted">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {

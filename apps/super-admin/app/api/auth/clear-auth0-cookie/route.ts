@@ -6,7 +6,7 @@ export async function POST(request: NextRequest) {
   try {
     // Limpiar la cookie de Auth0 logout
     await removeAuth0LogoutCookie();
-    
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error clearing Auth0 logout cookie:', error);

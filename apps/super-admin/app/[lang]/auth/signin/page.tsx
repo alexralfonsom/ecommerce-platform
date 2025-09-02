@@ -5,7 +5,10 @@ import { Locale } from '@repo/shared/configs/i18n';
 import { LoginForm } from '@repo/ui';
 import { APP_ROUTES } from '@repo/shared/configs/routes';
 import { Card, CardContent } from '@repo/ui';
-import { getCurrentAuthMode, shouldRedirectToUniversalLogin } from '@repo/shared/configs/authConfig';
+import {
+  getCurrentAuthMode,
+  shouldRedirectToUniversalLogin,
+} from '@repo/shared/configs/authConfig';
 import { UniversalLoginRedirect } from '@repo/ui';
 
 type SignInPageProps = {

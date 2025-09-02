@@ -55,13 +55,22 @@ export { default as BackButton } from './components/not-found/BackButton';
 // ===============================
 // 📄 PAGE COMPONENTS
 // ===============================
-export { PagesHeader, type PagesHeaderProps, type HeaderAction } from './components/pages/pagesHeader/PagesHeader';
+export {
+  PagesHeader,
+  type PagesHeaderProps,
+  type HeaderAction,
+} from './components/pages/pagesHeader/PagesHeader';
 
 // ===============================
 // 🌐 PROVIDERS
 // ===============================
 // QueryProvider and query utilities are now in @repo/shared for better architecture
-export { QueryProvider, createEntityQueryKeys, EntityStaleTime, getEntityQueryOptions } from '@repo/shared';
+export {
+  QueryProvider,
+  createEntityQueryKeys,
+  EntityStaleTime,
+  getEntityQueryOptions,
+} from '@repo/shared';
 export { SessionWrapper } from './components/providers/SessionWrapper';
 export { ThemeProvider } from './components/providers/theme-provider';
 
@@ -124,7 +133,7 @@ export * from './components/ui/data-table';
 // StatCard (complete module)
 export * from './components/ui/StatCard';
 
-// Toast (complete module) 
+// Toast (complete module)
 export * from './components/ui/Toast';
 
 // ===============================
@@ -137,5 +146,3 @@ export { default as Link } from './components/ui/Link';
 export { MultilineText } from './components/ui/MultilineText';
 export { default as NotificationButton } from './components/ui/NotificationButton';
 export * from './components/ui/nav-user';
-
-

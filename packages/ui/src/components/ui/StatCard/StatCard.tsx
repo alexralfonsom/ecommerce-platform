@@ -230,7 +230,7 @@ const SingleStatCard = memo<SingleStatCardProps>(function SingleStatCard({
           {direction === 'up' ? '+' : direction === 'down' ? '-' : ''}
           {Math.abs(value)}%
         </span>
-        {label && <span className="text-muted-foreground text-sm">{label}</span>}
+        {label && <span className="text-sm text-muted-foreground">{label}</span>}
       </div>
     );
   };
@@ -239,14 +239,14 @@ const SingleStatCard = memo<SingleStatCardProps>(function SingleStatCard({
   const renderLoadingSkeleton = () => (
     <div className="animate-pulse space-y-3">
       <div className="flex items-center justify-between">
-        <div className="bg-muted h-8 w-8 rounded-lg"></div>
-        <div className="bg-muted h-4 w-16 rounded"></div>
+        <div className="h-8 w-8 rounded-lg bg-muted"></div>
+        <div className="h-4 w-16 rounded bg-muted"></div>
       </div>
       <div className="space-y-2">
-        <div className="bg-muted h-4 w-3/4 rounded"></div>
-        <div className="bg-muted h-8 w-1/2 rounded"></div>
+        <div className="h-4 w-3/4 rounded bg-muted"></div>
+        <div className="h-8 w-1/2 rounded bg-muted"></div>
       </div>
-      <div className="bg-muted h-4 w-1/3 rounded"></div>
+      <div className="h-4 w-1/3 rounded bg-muted"></div>
     </div>
   );
 
@@ -269,7 +269,7 @@ const SingleStatCard = memo<SingleStatCardProps>(function SingleStatCard({
 
   if (item.loading) {
     return (
-      <div className={cn('bg-card rounded-lg border p-6 shadow-sm', className)}>
+      <div className={cn('rounded-lg border bg-card p-6 shadow-sm', className)}>
         {renderLoadingSkeleton()}
       </div>
     );
@@ -279,13 +279,13 @@ const SingleStatCard = memo<SingleStatCardProps>(function SingleStatCard({
     <Card
       className={cn(
         // Base card styles usando Shadcn tokens
-        'bg-card text-card-foreground rounded-lg border shadow-sm',
+        'rounded-lg border bg-card text-card-foreground shadow-sm',
         'transition-all duration-200 ease-in-out',
 
         // Interactive states
         isClickable && [
-          'hover:border-primary/20 cursor-pointer hover:shadow-md',
-          'focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-2',
+          'cursor-pointer hover:border-primary/20 hover:shadow-md',
+          'focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
         ],
 
         // Animation
@@ -313,7 +313,7 @@ const SingleStatCard = memo<SingleStatCardProps>(function SingleStatCard({
               </div>
             )}
 
-            <CardTitle className="text-md text-muted-foreground font-medium">
+            <CardTitle className="text-md font-medium text-muted-foreground">
               {item.title}
             </CardTitle>
           </div>
@@ -324,7 +324,7 @@ const SingleStatCard = memo<SingleStatCardProps>(function SingleStatCard({
       <CardContent className="pl-6">
         {item.content || (
           <div className="justify-between space-y-1">
-            <p className="text-foreground text-2xl font-bold">{formatValue(item.value)}</p>
+            <p className="text-2xl font-bold text-foreground">{formatValue(item.value)}</p>
             {/* Trend */}
             {renderTrend()}
           </div>
@@ -404,12 +404,12 @@ const StatCard = memo<ModernStatCardProps>(function ModernStatCard({
     return (
       <div
         className={cn(
-          'border-destructive/20 bg-destructive/5 col-span-full rounded-lg border p-6 text-center',
+          'col-span-full rounded-lg border border-destructive/20 bg-destructive/5 p-6 text-center',
           className,
         )}
       >
-        <Icon name="AlertCircle" className="text-destructive mx-auto mb-2 h-8 w-8" />
-        <p className="text-destructive text-sm">{error}</p>
+        <Icon name="AlertCircle" className="mx-auto mb-2 h-8 w-8 text-destructive" />
+        <p className="text-sm text-destructive">{error}</p>
       </div>
     );
   }
@@ -419,12 +419,12 @@ const StatCard = memo<ModernStatCardProps>(function ModernStatCard({
     return (
       <div
         className={cn(
-          'border-border bg-muted/50 col-span-full rounded-lg border p-6 text-center',
+          'col-span-full rounded-lg border border-border bg-muted/50 p-6 text-center',
           className,
         )}
       >
-        <Icon name="BarChart3" className="text-muted-foreground mx-auto mb-2 h-8 w-8" />
-        <p className="text-muted-foreground text-sm">No hay datos disponibles</p>
+        <Icon name="BarChart3" className="mx-auto mb-2 h-8 w-8 text-muted-foreground" />
+        <p className="text-sm text-muted-foreground">No hay datos disponibles</p>
       </div>
     );
   }

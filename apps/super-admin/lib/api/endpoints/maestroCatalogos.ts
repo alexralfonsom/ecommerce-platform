@@ -54,14 +54,19 @@ export const maestroCatalogosApi = {
    * Actualiza un catálogo maestro existente
    */
   update: async (id: number, data: IUpdateMaestroCatalogoRequest): Promise<ApiResponse<void>> => {
-    return await getUniversalBusinessApiClient().put(`${API_ENDPOINTS_CATALOGS.MAESTRO_CATALOGOS}/${id}`, data);
+    return await getUniversalBusinessApiClient().put(
+      `${API_ENDPOINTS_CATALOGS.MAESTRO_CATALOGOS}/${id}`,
+      data,
+    );
   },
 
   /**
    * Elimina un catálogo maestro
    */
   delete: async (id: number): Promise<ApiResponse<void>> => {
-    return await getUniversalBusinessApiClient().delete(`${API_ENDPOINTS_CATALOGS.MAESTRO_CATALOGOS}/${id}`);
+    return await getUniversalBusinessApiClient().delete(
+      `${API_ENDPOINTS_CATALOGS.MAESTRO_CATALOGOS}/${id}`,
+    );
   },
 
   /**

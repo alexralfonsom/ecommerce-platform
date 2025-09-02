@@ -86,16 +86,16 @@ export function LabelField({
     <div className={cn(sizeStyles[size].spacing, className)}>
       {/* Label */}
       <Label
-        className={cn('block font-medium leading-6', sizeStyles[size].label, 'text-foreground')}
+        className={cn('block leading-6 font-medium', sizeStyles[size].label, 'text-foreground')}
       >
         {label}
       </Label>
       {/* Descripción general */}
-      {description && <p className="text-muted-foreground mb-1 text-xs">{description}</p>}
+      {description && <p className="mb-1 text-xs text-muted-foreground">{description}</p>}
       {/* Valor */}
       <div className="flex items-center gap-2">
         {/* Icono opcional */}
-        {icon && <Icon name={icon} className="text-muted-foreground h-4 w-4 flex-shrink-0" />}
+        {icon && <Icon name={icon} className="h-4 w-4 flex-shrink-0 text-muted-foreground" />}
 
         {/* Valor principal */}
         <span
@@ -114,8 +114,8 @@ export function LabelField({
             type="button"
             onClick={handleCopy}
             className={cn(
-              'hover:bg-muted/80 inline-flex h-6 w-6 items-center justify-center rounded transition-colors',
-              'focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1',
+              'inline-flex h-6 w-6 items-center justify-center rounded transition-colors hover:bg-muted/80',
+              'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:outline-none',
             )}
             title={copied ? 'Copiado!' : 'Copiar valor'}
           >

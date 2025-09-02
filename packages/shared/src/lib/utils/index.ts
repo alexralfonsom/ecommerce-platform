@@ -29,14 +29,14 @@ export {
   filterSecondaryNavByRole,
   hasAccess,
   isAdmin,
-  isManagerOrAbove
+  isManagerOrAbove,
 } from './roleUtils';
 export { ExportUtils } from './exportUtils';
 export { buildQueryString, buildUrlWithParams, appendQueryParams } from './queryParams';
-export { 
-  buildRouteConfigFromMenu, 
-  consolidateRouteConfigs, 
+export {
+  buildRouteConfigFromMenu,
+  consolidateRouteConfigs,
   routeConfigUtils,
   type SuperRouteConfig,
-  type DynamicRouteConfig 
+  type DynamicRouteConfig,
 } from './routeConfigBuilder';

@@ -13,7 +13,7 @@ export function buildQueryString(params?: Record<string, any>): string {
   }
 
   const queryParams = new URLSearchParams();
-  
+
   Object.entries(params).forEach(([key, value]) => {
     if (value !== undefined && value !== null) {
       queryParams.append(key, String(value));
@@ -31,7 +31,7 @@ export function buildQueryString(params?: Record<string, any>): string {
  */
 export function buildUrlWithParams(baseUrl: string, params?: Record<string, any>): string {
   const queryString = buildQueryString(params);
-  
+
   if (!queryString) {
     return baseUrl;
   }

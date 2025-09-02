@@ -15,9 +15,9 @@ export const useAuthToken = () => {
     if (extendedSession?.error === 'RefreshAccessTokenError') {
       console.error('Error al refrescar token, redirigiendo al login...');
       // Forzar logout cuando el token no se puede refrescar
-      signOut({ 
+      signOut({
         callbackUrl: '/auth/signin?error=token_refresh_failed',
-        redirect: true 
+        redirect: true,
       });
     }
   }, [extendedSession]);
@@ -28,7 +28,7 @@ export const useAuthToken = () => {
       if (status !== 'authenticated' || !extendedSession?.accessToken) {
         return false;
       }
-      
+
       // Validar que el cliente puede hacer requests
       const isValid = await getUniversalBusinessApiClient().validateCurrentSession();
       return isValid;

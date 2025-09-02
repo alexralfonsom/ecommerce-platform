@@ -79,7 +79,7 @@ const LanguageSwitcher = memo<LanguageSwitcherProps>(function LanguageSwitcher({
       <DropdownMenuTrigger asChild>
         <Button
           variant="outline"
-          className={cn('data-[state=open]:bg-accent group gap-2', className)}
+          className={cn('group gap-2 data-[state=open]:bg-accent', className)}
           disabled={isPending}
           aria-label={`Current language: ${currentLangConfig.nativeName}. Click to change language`}
         >
@@ -128,7 +128,7 @@ const LanguageSwitcher = memo<LanguageSwitcherProps>(function LanguageSwitcher({
                 {`${langConfig.code} - ${langConfig.nativeName}`}
               </div>
               {isActive && (
-                <Icon name="Check" className="text-primary ml-2 h-4 w-4" aria-hidden="true" />
+                <Icon name="Check" className="ml-2 h-4 w-4 text-primary" aria-hidden="true" />
               )}
             </DropdownMenuItem>
           );

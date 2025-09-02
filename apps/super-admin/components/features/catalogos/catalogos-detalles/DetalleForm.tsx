@@ -141,9 +141,9 @@ export function DetalleForm({
           />
 
           {mode === 'edit' && initialData && (
-            <div className="bg-muted/50 space-y-2 rounded-lg p-4">
-              <h4 className="text-foreground text-sm font-medium">Información del registro</h4>
-              <div className="text-muted-foreground grid grid-cols-1 gap-2 text-xs">
+            <div className="space-y-2 rounded-lg bg-muted/50 p-4">
+              <h4 className="text-sm font-medium text-foreground">Información del registro</h4>
+              <div className="grid grid-cols-1 gap-2 text-xs text-muted-foreground">
                 <div className="flex justify-between">
                   <span>ID:</span>
                   <span className="font-mono">{initialData.id}</span>
@@ -186,8 +186,8 @@ export function DetalleForm({
       </Form>
       {/* Debug Info (solo en desarrollo) */}
       {process.env.NODE_ENV === 'development' && (
-        <details className="bg-muted/30 mt-6 rounded p-4 text-xs">
-          <summary className="text-muted-foreground cursor-pointer font-medium">
+        <details className="mt-6 rounded bg-muted/30 p-4 text-xs">
+          <summary className="cursor-pointer font-medium text-muted-foreground">
             Estado del formulario (Dev)
           </summary>
           <pre className="mt-2 text-xs">

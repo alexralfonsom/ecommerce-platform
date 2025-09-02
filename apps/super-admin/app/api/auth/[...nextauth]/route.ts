@@ -6,7 +6,11 @@ import AzureADB2CProvider from 'next-auth/providers/azure-ad-b2c';
 import { i18n } from '@repo/shared/configs/i18n';
 import { generalSettings } from '@repo/shared/configs/generalSettings';
 import { APP_ROUTES } from '@repo/shared/configs/routes';
-import { isAuth0Enabled, isAzureB2CEnabled, isCredentialsEnabled } from '@repo/shared/configs/authConfig';
+import {
+  isAuth0Enabled,
+  isAzureB2CEnabled,
+  isCredentialsEnabled,
+} from '@repo/shared/configs/authConfig';
 import { ExtendedUser } from '@repo/shared/types/auth';
 import { getAllScopes, LOGICAL_API_CONFIG } from '@repo/shared/lib/api';
 import * as process from 'node:process';
@@ -113,7 +117,7 @@ export const authOptions: NextAuthOptions = {
     error: '/auth/error',
   },
   callbacks: {
-    async jwt({ token, user, account, profile })  {
+    async jwt({ token, user, account, profile }) {
       if (account && user) {
         if (account.access_token) {
           token.accessToken = account.access_token;
@@ -136,60 +140,66 @@ export const authOptions: NextAuthOptions = {
             id_token: account.id_token,
             client_id: process.env.AUTH0_CLIENT_ID!,
           });
-
         }
 
         // Extraer permisos del access_token para Auth0
         if (account?.access_token && account.provider === 'auth0') {
           const decodedToken = decodeJWT(account.access_token);
-          console.log('🔍 Decoded Access Token Full Payload:', JSON.stringify(decodedToken, null, 2));
-          
+          console.log(
+            '🔍 Decoded Access Token Full Payload:',
+            JSON.stringify(decodedToken, null, 2),
+          );
+
           // También decodificar el ID token si está disponible para comparar
           if (account.id_token) {
             const decodedIdToken = decodeJWT(account.id_token);
-            console.log('🔍 Decoded ID Token Full Payload:', JSON.stringify(decodedIdToken, null, 2));
+            console.log(
+              '🔍 Decoded ID Token Full Payload:',
+              JSON.stringify(decodedIdToken, null, 2),
+            );
           }
-          
+
           // Información del profile también puede contener datos útiles
           console.log('🔍 Profile Data:', JSON.stringify(profile, null, 2));
           console.log('🔍 User Data from Provider:', JSON.stringify(user, null, 2));
-          
+
           if (decodedToken) {
             token.permissions = decodedToken['http://saas_startia.tech/permissions'] || [];
-            
+
             // Extraer platform_role desde claims personalizados de Auth0
             // Manejar posible comilla extra en el claim
-            token.platform_role = decodedToken['http://saas_startia.tech/platform_role'] ||
-                                   'user_role_not_defined';
-            
+            token.platform_role =
+              decodedToken['http://saas_startia.tech/platform_role'] || 'user_role_not_defined';
+
             // Extraer tenantId desde claims personalizados o profile metadata
-            token.tenantId = decodedToken['http://saas_startia.tech/tenant_id'] ||
-                            (profile as any)?.user_metadata?.tenant_id || 
-                            'default_tenant';
-                            
+            token.tenantId =
+              decodedToken['http://saas_startia.tech/tenant_id'] ||
+              (profile as any)?.user_metadata?.tenant_id ||
+              'default_tenant';
+
             // Extraer organization_id si está disponible
-            token.organizationId = decodedToken['http://saas_startia.tech/organization_id']?.toString() || null;
-            
+            token.organizationId =
+              decodedToken['http://saas_startia.tech/organization_id']?.toString() || null;
+
             // Extraer auth0Id (sub) - ID del proveedor de identidad
             token.auth0Id = decodedToken.sub || user.id || 'unknown';
-            
+
             // userId será el ID interno que se asignará después de la sincronización con DB
             // Por ahora mantener el auth0Id como fallback
             token.userId = token.auth0Id;
-            
+
             // El email se obtiene una vez y se almacena en la sesión para evitar llamadas repetidas
-            token.email = user.email || // Del user object de NextAuth (más confiable)
-                         (profile as any)?.email || // Del profile de Auth0
-                         (account.id_token ? decodeJWT(account.id_token)?.email : null) || // Del ID token
-                         decodedToken.email || // Del access token (menos común)
-                         '';
-                         
+            token.email =
+              user.email || // Del user object de NextAuth (más confiable)
+              (profile as any)?.email || // Del profile de Auth0
+              (account.id_token ? decodeJWT(account.id_token)?.email : null) || // Del ID token
+              decodedToken.email || // Del access token (menos común)
+              '';
+
             // Obtener name también para evitar futuras llamadas
-            token.name = user.name || 
-                        (profile as any)?.name || 
-                        (profile as any)?.nickname ||
-                        token.email;
-            
+            token.name =
+              user.name || (profile as any)?.name || (profile as any)?.nickname || token.email;
+
             console.log('🔐 Extracted Data Summary:');
             console.log('  - Permissions:', token.permissions);
             console.log('  - Tenant ID:', token.tenantId);
@@ -200,11 +210,16 @@ export const authOptions: NextAuthOptions = {
             console.log('    - user.email:', user.email);
             console.log('    - decodedToken.email:', decodedToken.email);
             console.log('    - profile.email:', (profile as any)?.email);
-            console.log('    - ID token email:', account.id_token ? decodeJWT(account.id_token)?.email : 'No ID token');
+            console.log(
+              '    - ID token email:',
+              account.id_token ? decodeJWT(account.id_token)?.email : 'No ID token',
+            );
             console.log('    - Final email:', token.email);
             console.log('  - Available Access Token Claims:', Object.keys(decodedToken));
-            console.log('  - Available Profile Keys:', profile ? Object.keys(profile) : 'No profile');
-
+            console.log(
+              '  - Available Profile Keys:',
+              profile ? Object.keys(profile) : 'No profile',
+            );
           }
         }
 
@@ -217,10 +232,10 @@ export const authOptions: NextAuthOptions = {
               body: JSON.stringify({
                 auth0Id: user.id,
                 email: user.email,
-                tenantId: token.tenantId
-              })
+                tenantId: token.tenantId,
+              }),
             });
-            
+
             if (appRolesResponse.ok) {
               const appData = await appRolesResponse.json();
               token.appRoles = appData.roles || [];
@@ -252,7 +267,7 @@ export const authOptions: NextAuthOptions = {
               token.userId = syncResult.internalUserId; // Reemplazar con el GUID interno
               token.internalUserId = syncResult.internalUserId;
               token.isNewUser = syncResult.isNewUser;
-              
+
               console.log('✅ User synchronized with local DB:');
               console.log('  - Internal User ID:', token.userId);
               console.log('  - Auth0 ID:', token.auth0Id);
@@ -290,17 +305,18 @@ export const authOptions: NextAuthOptions = {
         user.id = token.id || user.id || '';
         user.provider = token.provider;
         user.tenantId = token.tenantId as string;
-        
+
         // Campos requeridos para APIM
         user.userId = token.userId as string;
         user.platform_role = token.platform_role as string;
         user.email = user.email || token.email;
-        
-        // Auth0 ya envía los permisos correctos, los usamos directamente  
-        user.permissions = token.permissions as string[] || [];
+
+        // Auth0 ya envía los permisos correctos, los usamos directamente
+        user.permissions = (token.permissions as string[]) || [];
         session.accessToken = typeof token.accessToken === 'string' ? token.accessToken : undefined;
-        session.tokenExpires = typeof token.tokenExpires === 'number' ? token.tokenExpires : undefined;
-        
+        session.tokenExpires =
+          typeof token.tokenExpires === 'number' ? token.tokenExpires : undefined;
+
         // Indicar si hay errores
         if (token.error) {
           session.error = token.error;
@@ -353,10 +369,10 @@ function decodeJWT(token: string) {
     const jsonPayload = decodeURIComponent(
       atob(base64)
         .split('')
-        .map(function(c) {
+        .map(function (c) {
           return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
         })
-        .join('')
+        .join(''),
     );
 
     return JSON.parse(jsonPayload);
@@ -467,7 +483,7 @@ async function refreshAuth0Token(token: any) {
         client_secret: process.env.AUTH0_CLIENT_SECRET!,
         refresh_token: token.refreshToken,
         audience: LOGICAL_API_CONFIG.audience,
-        scope: getAllScopes()
+        scope: getAllScopes(),
       }),
     });
 

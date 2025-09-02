@@ -22,7 +22,9 @@ export const maestroCatalogosDetalleApi = {
    * Obtiene un detalle por ID
    */
   getById: async (id: number): Promise<MaestroCatalogoDetalleResponse> => {
-    return await getUniversalBusinessApiClient().get(`${API_ENDPOINTS_CATALOGS.MAESTRO_CATALOGOS_DETALLE}/${id}`);
+    return await getUniversalBusinessApiClient().get(
+      `${API_ENDPOINTS_CATALOGS.MAESTRO_CATALOGOS_DETALLE}/${id}`,
+    );
   },
 
   /**
@@ -50,7 +52,9 @@ export const maestroCatalogosDetalleApi = {
     params?: MaestroCatalogosDetalleParameters,
   ): Promise<MaestroCatalogosDetallePagedResponse> => {
     const endpoint = buildUrlWithParams(API_ENDPOINTS_CATALOGS.MAESTRO_CATALOGOS, params);
-    return await getUniversalBusinessApiClient().get<MaestroCatalogosDetallePagedResponse>(endpoint);
+    return await getUniversalBusinessApiClient().get<MaestroCatalogosDetallePagedResponse>(
+      endpoint,
+    );
   },
 
   /**
@@ -80,7 +84,9 @@ export const maestroCatalogosDetalleApi = {
       `${API_ENDPOINTS_CATALOGS.MAESTRO_CATALOGOS_DETALLE}/tipo/${encodeURIComponent(nombreMaestro)}/detalles/paged`,
       params,
     );
-    return await getUniversalBusinessApiClient().get<MaestroCatalogosDetallePagedResponse>(endpoint);
+    return await getUniversalBusinessApiClient().get<MaestroCatalogosDetallePagedResponse>(
+      endpoint,
+    );
   },
 
   /**
@@ -110,7 +116,9 @@ export const maestroCatalogosDetalleApi = {
       `${API_ENDPOINTS_CATALOGS.MAESTRO_CATALOGOS_DETALLE}/dapper/nombre/${encodeURIComponent(nombreMaestro)}/detalles/paged`,
       params,
     );
-    return await getUniversalBusinessApiClient().get<MaestroCatalogosDetallePagedResponse>(endpoint);
+    return await getUniversalBusinessApiClient().get<MaestroCatalogosDetallePagedResponse>(
+      endpoint,
+    );
   },
 
   /**
@@ -128,7 +136,10 @@ export const maestroCatalogosDetalleApi = {
   /**
    * Actualiza un detalle de catálogo existente
    */
-  update: async (id: number, data: IUpdateMaestroCatalogoDetalleRequest): Promise<ApiResponse<void>> => {
+  update: async (
+    id: number,
+    data: IUpdateMaestroCatalogoDetalleRequest,
+  ): Promise<ApiResponse<void>> => {
     return await getUniversalBusinessApiClient().put(
       `${API_ENDPOINTS_CATALOGS.MAESTRO_CATALOGOS_DETALLE}/detalles/${id}`,
       data,
